@@ -27,8 +27,8 @@ export default Vue.extend({
   computed: {
     link (): string {
       if (this.config.directoryPath.startsWith('/')) {
-        return `/directory${this.config.directoryPath}`
-      } else { return `/directory/${this.config.directoryPath}` }
+        return encodeURI(`/directory${this.config.directoryPath}`)
+      } else { return encodeURI(`/directory/${this.config.directoryPath}`) }
     }
   }
 })
