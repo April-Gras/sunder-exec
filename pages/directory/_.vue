@@ -29,8 +29,8 @@ export default VueMixins(clientIoMixin).extend({
   components: {
     TypoTitle, ButtonMain
   },
-  async asyncData ({ params, $axios, error }) {
-    const directoryPath = `/${params.pathMatch}`
+  async asyncData ({ route, $axios, error }) {
+    const directoryPath = decodeURI(route.fullPath.substring('/directory/'.length - 1))
 
     try {
       return {

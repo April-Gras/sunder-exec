@@ -1,6 +1,6 @@
 export default {
   targetDirectories: [
-    'path/to/scriptdirectory'
+    '/home/nowl/code/sldjalskjdklas$%%$%^45/'
   ],
   extentionMapping: {
     exe: null,

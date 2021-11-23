@@ -9,12 +9,24 @@
         :class="{selected : selectedTabUid === uid}"
         @click="selectedTabUid = uid"
       >
-        {{ fileName }} - {{ uid }}
+        <span>{{ fileName }} - {{ uid }}</span>
+        <span
+          class="tw-font-bold tw-text-sm tw-inline-block"
+          @click.stop="removeUid(uid)"
+        >x</span>
       </div>
     </div>
     <transition name="fade" mode="out-in">
-      <div v-if="selectedTabUid !== null && tabs[selectedTabUid]" :key="selectedTabUid" class="output">
-        <span v-for="({ text, type }, index) in tabs[selectedTabUid].output" :key="index" :class="type">{{ text }}</span>
+      <div
+        v-if="selectedTabUid !== null && tabs[selectedTabUid]"
+        :key="selectedTabUid"
+        class="output"
+      >
+        <span
+          v-for="({ text, type }, index) in tabs[selectedTabUid].output"
+          :key="index"
+          :class="type"
+        >{{ text }}</span>
       </div>
     </transition>
   </div>
@@ -73,6 +85,9 @@ export default VueMixins(clientIoMixin).extend({
           })
         }
       })
+    },
+    removeUid (uid: string): void {
+      if (this.tabs[uid]) { this.$delete(this.tabs, uid) }
     }
   },
   watch: {

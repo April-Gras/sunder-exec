@@ -44,8 +44,7 @@ type ListenFunction = (this: BindedThis, value: SocketToServerEventPayloads[Avai
 const socketServerListenConfig = {
   launchScript (value: SocketToServerEventPayloads['launchScript']) {
     const { directoryPath, fileName } = value
-
-    const fullTargetPath = `${directoryPath}${fileName}`
+    const fullTargetPath = `${directoryPath}${directoryPath.endsWith('/') ? '' : '/'}${fileName}`
 
     if (fs.existsSync(fullTargetPath)) {
       const uid = uidgen.generateSync()
