@@ -1,11 +1,12 @@
 export default {
   targetDirectories: [
-    'path/to/scriptdirectory'
+    'Scripts/'
   ],
   extentionMapping: {
     exe: null,
     sh: 'sh',
-    js: 'node'
+    js: 'node',
+    ps1: 'powershell'
   } as Record<string, string | null>,
   noExtentionExec: null
 } as const
