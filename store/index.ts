@@ -1,1 +1,7 @@
-export const state = () => ({})
+import { } from 'vuex'
+
+export const state = () => ({
+  jobs: {
+
+  }
+})

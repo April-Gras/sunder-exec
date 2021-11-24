@@ -1,0 +1,9 @@
+{
+	"targetDirectories": [
+		"./"
+	],
+	"extentionMapping": {
+		"js": "node"
+	},
+	"noExtentionExec": null
+}

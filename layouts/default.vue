@@ -9,6 +9,9 @@
               class="tw-w-16 tw-h-16 tw-object-cover tw-overflow-hidden tw-rounded-full"
             >
           </NuxtLink>
+          <NuxtLink to="/jobList">
+            Running Job List
+          </NuxtLink>
         </div>
       </div>
     </div>

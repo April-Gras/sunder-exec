@@ -25,9 +25,6 @@ export default {
       }
     ]
   },
-  server: {
-    host: "0.0.0.0"
-  },
   css: [
   ],
   plugins: [
@@ -38,17 +35,17 @@ export default {
   ],
   modules: [
     '@nuxtjs/axios',
-    '~/modules/socket-io.ts'
+    '~/modules/sunder-exec/index.ts'
   ],
   serverMiddleware: [
-    {
-      path: '/read-from-config',
-      handler: '~/api/read-from-config.ts'
-    },
-    {
-      path: '/read-target-directory',
-      handler: '~/api/read-target-directory.ts'
-    }
+    // {
+    //   path: '/read-from-config',
+    //   handler: '~/api/read-from-config.ts'
+    // },
+    // {
+    //   path: '/read-target-directory',
+    //   handler: '~/api/read-target-directory.ts'
+    // }
   ],
   watch: ['~/modules/*.ts']
 }

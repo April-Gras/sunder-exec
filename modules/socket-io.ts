@@ -8,12 +8,13 @@ import runtimeConfiguration from '../runtimeConfiguration'
 import { extractExtentionFromFileName } from '../helpers/server/fileApi'
 
 const uidgen = new UIDGenerator()
-const childProcessPool = {} as Record<string, {
+type ChildProcessDescriptor = {
   process: ChildProcess | null
   fileName: string
   execString: string
   directoryPath: string
-}>
+}
+const childProcessPool = {} as Record<string, ChildProcessDescriptor>
 
 const socketIoModule: Module<{}> = function () {
   this.nuxt.hook('listen', (server: Server, { port }: { port: number }) => {
