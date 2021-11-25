@@ -12,9 +12,7 @@ export default Vue.extend({
     }
   },
   mounted () {
-    this.socket = io({
-      port: 3001
-    })
+    this.socket = this.$clientIoManager.socket('/')
     this.socket.on('connect', () => { console.log(this.socket?.connected) })
     this.socket.on('disconnect', () => { console.log(this.socket?.connected) })
     this.postSocketInit(this.socket)

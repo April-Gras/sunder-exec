@@ -1,4 +1,3 @@
-import { Server } from 'http'
 import { Server as SocketIoServer } from 'socket.io'
 
 export type SocketToClientEventPayloads = {
@@ -20,23 +19,29 @@ export type AvailableSocketEventsToClient = keyof SocketToClientEventPayloads
 class SocketManager {
   private io: SocketIoServer
 
-  constructor (io: SocketIoServer) {
-    this.io = io
+  constructor () {
+    this.io = new SocketIoServer(3002, {
+      cors: {
+        origin: /.*/,
+        methods: ['GET', 'POST']
+      }
+    })
 
-    io.on('connect', (socket) => {
+    this.io.on('connect', (socket) => {
       // Setup debug events
       socket.on('ping', () => {
-        io.emit('pong', 'from io')
+        this.io.emit('pong', 'from io')
         socket.emit('pong', 'from socket')
       })
     })
   }
 
   emit<T extends AvailableSocketEventsToClient> (eventName: T, payload: SocketToClientEventPayloads[T]): void {
+    console.log(`[SOCKET IO] - Emitting ${eventName} to client`)
     this.io.emit(eventName, payload)
   }
 }
 
-export function initializeSocketProcess (server: Server): SocketManager {
-  return new SocketManager(new SocketIoServer(server))
+export function initializeSocketProcess (): SocketManager {
+  return new SocketManager()
 }

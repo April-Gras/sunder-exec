@@ -25,10 +25,6 @@ export default {
       }
     ]
   },
-  css: [
-  ],
-  plugins: [
-  ],
   buildModules: [
     '@nuxt/typescript-build',
     '@nuxtjs/tailwindcss'
@@ -37,15 +33,7 @@ export default {
     '@nuxtjs/axios',
     '~/modules/sunder-exec/index.ts'
   ],
-  serverMiddleware: [
-    // {
-    //   path: '/read-from-config',
-    //   handler: '~/api/read-from-config.ts'
-    // },
-    // {
-    //   path: '/read-target-directory',
-    //   handler: '~/api/read-target-directory.ts'
-    // }
-  ],
-  watch: ['~/modules/*.ts']
+  plugins: [
+    { src: '~/plugins/ioManager.client.ts', mode: 'client' }
+  ]
 }

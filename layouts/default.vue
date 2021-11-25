@@ -18,7 +18,7 @@
     <div class="mainContainer outerWidthControl">
       <div class="mainWidthLimiter">
         <div v-if="!isOnIndex" class="tw-mb-2 tw-cursor-pointer" @click="$router.go(-1)">
-          < Previous Page
+          &larr; Previous Page
         </div>
         <Nuxt class="tw-w-full tw-relative" />
         <Terminal />
@@ -40,6 +40,8 @@ export default Vue.extend({
     isOnIndex (): boolean {
       return this.$route.path === '/'
     }
+  },
+  mounted (): void {
   }
 })
 </script>

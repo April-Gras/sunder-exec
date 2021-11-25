@@ -1,7 +1,3 @@
-import { } from 'vuex'
+export const state = () => ({})
 
-export const state = () => ({
-  jobs: {
-
-  }
-})
+export type RootState = ReturnType<typeof state>
