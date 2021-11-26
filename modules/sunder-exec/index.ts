@@ -4,6 +4,8 @@ import { getRuntimeExtention } from './configReader'
 import { ProcessPool } from './processPool'
 import { initializeSocketProcess } from './socket'
 
+import api from './api'
+
 const IO_PORT = 3001
 
 const sunderExecModule: Module = async function () {
@@ -12,19 +14,7 @@ const sunderExecModule: Module = async function () {
 
   this.nuxt.hook('listen', () => {
     const ioManager = initializeSocketProcess()
-    const server = http.createServer((req, res) => {
-      res.setHeader('Access-Control-Allow-Origin', '*')
-      res.setHeader('Access-Control-Request-Method', '*')
-      res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET')
-      res.setHeader('Access-Control-Allow-Headers', '*')
-      res.setHeader('Content-Type', 'application/json')
-
-      // TODO Organise this mess
-      if (req.url === '/rest-ping' && req.method === 'GET') {
-        ioManager.emit('confirmScriptLaunch', { directoryPath: 'test', fileName: 'test', uid: 'more test' })
-        res.end(JSON.stringify('ok'))
-      } else { res.end(JSON.stringify('ok')) }
-    })
+    const server = http.createServer((req, res) => api(req, res, ioManager))
 
     this.nuxt.options.cli.badgeMessages.push(`REST API on ${this.nuxt.options.server.host}:${IO_PORT}`)
     this.nuxt.options.cli.badgeMessages.push(`SOCKET IO on ${this.nuxt.options.server.host}:${3002}`)
