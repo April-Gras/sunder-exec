@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES2018",
+    "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "Node",
     "resolveJsonModule": true,
@@ -22,7 +22,8 @@
       ],
       "@/*": [
         "./*"
-      ]
+      ],
+      "module-routes": ["./modules/sunder-exec/routes/index"]
     },
     "types": [
       "@nuxt/types",

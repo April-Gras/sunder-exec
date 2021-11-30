@@ -33,5 +33,8 @@ export default {
   },
   buildModules: ["@nuxt/typescript-build", "@nuxtjs/tailwindcss"],
   modules: ["@nuxtjs/axios", "~/modules/sunder-exec/index.ts"],
-  plugins: [{ src: "~/plugins/ioManager.client.ts", mode: "client" }],
+  plugins: [
+    { src: "~/plugins/ioManager.client.ts", mode: "client" },
+    "~/plugins/axiosApi.ts",
+  ],
 }

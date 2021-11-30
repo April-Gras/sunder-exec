@@ -22,9 +22,8 @@
 <script lang="ts">
 import Vue, { PropOptions } from "vue"
 
+import { GetPayloadReturnDescriptor } from "module-routes"
 import TypoSubtitle from "~/components/typographic/subtitle.vue"
-
-import { ExecTargetConfigElem } from "~/helpers/server/fileApi"
 
 export default Vue.extend({
   components: {
@@ -34,7 +33,9 @@ export default Vue.extend({
     config: {
       type: Object,
       required: true,
-    } as PropOptions<ExecTargetConfigElem>,
+    } as PropOptions<
+      GetPayloadReturnDescriptor["/readDirectoryFromConfig"][number]
+    >,
   },
   computed: {
     link(): string {

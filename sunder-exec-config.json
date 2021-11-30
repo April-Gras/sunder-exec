@@ -1,9 +1,10 @@
 {
 	"targetDirectories": [
-		"./"
+		"./",
+		"/home/nowl/code/sunder-exec/"
 	],
 	"extentionMapping": {
-		"js": "node"
+		".js": "node"
 	},
 	"noExtentionExec": null
 }

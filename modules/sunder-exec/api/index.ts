@@ -1,7 +1,17 @@
 import { IncomingMessage, ServerResponse } from "http"
-import { initializeSocketProcess } from "../socket"
+import { ProcessPool } from "../processPool"
+import { SocketIoManager } from "../socket"
+import {
+  postRoutes,
+  availablePostRouteNames,
+  getRoutes,
+  getRouteNames,
+} from "../routes/createRoutine"
+import { AvailableGetRoutes, AvailablePostRoutes } from "../routes"
+import { RuntimeConfiguration } from "../configReader"
+import { getJsonFromReq } from "./getJsonFromReq"
 
-export type SocketManager = ReturnType<typeof initializeSocketProcess>
+import { resError } from "./resError"
 
 export type ReqResBundle = {
   req: IncomingMessage
@@ -11,33 +21,126 @@ export type ReqResBundle = {
 export default function (
   req: IncomingMessage,
   res: ServerResponse,
-  ioManager: SocketManager
+  ioManager: SocketIoManager,
+  processPool: ProcessPool,
+  runtimeConfig: RuntimeConfiguration
 ): void {
-  handleOptionCase({ req, res }, () => {
-    res.end("ok")
-  })
-}
-
-function handleOptionCase(
-  { req, res }: ReqResBundle,
-  notOptionCallback: (context: ReqResBundle) => void
-) {
   res.setHeader("Access-Control-Allow-Origin", "*")
   res.setHeader("Access-Control-Request-Method", "*")
   res.setHeader("Access-Control-Allow-Methods", "OPTIONS, GET, POST")
   res.setHeader("Access-Control-Allow-Headers", "*")
   res.setHeader("Content-Type", "application/json")
 
+  console.log(`[API] - ${req.method} on ${req.url}`)
   switch (req.method) {
     case "GET":
-      return notOptionCallback({ req, res })
+      handleGetRequest({
+        req,
+        res,
+        ioManager,
+        processPool,
+        runtimeConfig,
+      })
+      break
     case "POST":
-      return notOptionCallback({ req, res })
+      handlePostRequest({
+        req,
+        res,
+        ioManager,
+        processPool,
+        runtimeConfig,
+      })
+      break
     case "OPTION":
-      return res.end("OPTION OK")
+      res.end("OPTION OK")
+      break
     default:
       res.statusCode = 404
       res.statusMessage = "Url not found"
       res.end("Url not found")
   }
+}
+
+type HandleRequestContext = {
+  req: IncomingMessage
+  res: ServerResponse
+  ioManager: SocketIoManager
+  processPool: ProcessPool
+  runtimeConfig: RuntimeConfiguration
+}
+
+function handlePostRequest({
+  req,
+  res,
+  ioManager,
+  processPool,
+  runtimeConfig,
+}: HandleRequestContext): void {
+  const { url } = req
+
+  if (isPartOfUrlSet(availablePostRouteNames, url)) {
+    const { validator, handler } =
+      postRoutes.find((e) => e.routeUrl === url) ?? {}
+
+    if (validator && handler) {
+      getJsonFromReq(req).then((body) => {
+        if (validator.bind({ runtimeConfig })(body)) {
+          handler
+            .bind({
+              server: {
+                req,
+                res,
+              },
+              ioManager,
+              runtimeConfig,
+              processPool,
+            })(body)
+            .then(({ err, value }) => {
+              if (value) res.end(JSON.stringify(value))
+              else if (err) resError(res, err.message, err.statusCode)
+            })
+        } else resError(res, "Runtime issue :<", 500)
+      })
+    } else resError(res, "Url not found", 404)
+  }
+}
+
+function handleGetRequest({
+  req,
+  res,
+  ioManager,
+  processPool,
+  runtimeConfig,
+}: HandleRequestContext): void {
+  const { url } = req
+
+  console.log({ url })
+  if (isPartOfUrlSet(getRouteNames, url)) {
+    const { handler } = getRoutes.find((e) => e.routeUrl) ?? {}
+
+    if (handler) {
+      handler
+        .bind({
+          server: {
+            req,
+            res,
+          },
+          ioManager,
+          runtimeConfig,
+          processPool,
+        })()
+        .then(({ err, value }) => {
+          if (value) res.end(JSON.stringify(value))
+          else if (err) resError(res, err.message, err.statusCode)
+          else resError(res, "Runtime issue :<", 500)
+        })
+    } else resError(res, "Run time issue", 404)
+  } else resError(res, "Url not found", 404)
+}
+
+function isPartOfUrlSet<T extends AvailablePostRoutes | AvailableGetRoutes>(
+  urlSet: string[],
+  url?: string
+): url is T {
+  return urlSet.includes(url ?? "")
 }

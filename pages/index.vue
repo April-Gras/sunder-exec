@@ -16,28 +16,37 @@
 <script lang="ts">
 import Vue from "vue"
 
-import { TargetsApiResponse } from "~/helpers/server/fileApi"
-
+import { GetPayloadReturnDescriptor } from "module-routes"
 import TypoTitle from "~/components/typographic/title.vue"
 import FileReading from "~/components/fileReading/index.vue"
+
+// TODO establish _AsyncData interface
+type _AsyncData = {
+  fileConfigs: GetPayloadReturnDescriptor
+}
 
 export default Vue.extend({
   components: {
     FileReading,
     TypoTitle,
   },
-  async asyncData({ $axios }) {
+  async asyncData({ $getApi }) {
     try {
-      return { fileConfigs: await $axios.$get("/read-from-config") }
+      const fileConfigs = await $getApi("/readDirectoryFromConfig")
+
+      console.log({ fileConfigs })
+      return {
+        fileConfigs,
+      }
     } catch (err) {
-      console.log({ err })
+      console.log(err)
       return { fileConfigs: [] }
     }
   },
   data() {
     const out = {}
 
-    return out as typeof out & TargetsApiResponse
+    return out as typeof out & _AsyncData
   },
 })
 </script>

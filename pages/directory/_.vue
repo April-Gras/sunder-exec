@@ -34,13 +34,7 @@
         <div class="tw-mb-2 sm:tw-mb-0">
           {{ file }}
         </div>
-        <ButtonMain
-          @click.native="
-            emitTest({ directoryPath: config.directoryPath, fileName: file })
-          "
-        >
-          Launch
-        </ButtonMain>
+        <ButtonMain> Launch </ButtonMain>
       </div>
     </div>
   </div>
@@ -64,33 +58,21 @@ export default VueMixins(clientIoMixin).extend({
       route.fullPath.substring("/directory/".length - 1)
     )
 
-    try {
-      return {
-        config: await $axios.$post("/read-target-directory", {
-          directoryPath,
-        }),
-      }
-    } catch (err) {
-      console.log(err)
-      error({
-        message: "Bruh please stop lmfao",
-        statusCode: 404,
-      })
-    }
+    // try {
+    //   return {
+    //     config: await $axios.$post("/readTargetDirectory", {
+    //       directoryPath,
+    //     }),
+    //   }
+    // } catch (err) {
+    //   console.log(err)
+    //   error({
+    //     message: "Bruh please stop lmfao",
+    //     statusCode: 404,
+    //   })
+    // }
   },
   methods: {
-    emitTest({
-      directoryPath,
-      fileName,
-    }: {
-      directoryPath: string
-      fileName: string
-    }): void {
-      this.socketEmit("launchScript", {
-        fileName,
-        directoryPath,
-      })
-    },
     postSocketInit() {
       this.socketListen("confirmScriptLaunch", (payload) => {
         console.log(payload.directoryPath, payload.fileName)
