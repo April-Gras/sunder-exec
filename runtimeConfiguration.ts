@@ -1,6 +1,6 @@
 export default {
   targetDirectories: [
-    'Scripts/'
+    '/home/nowl/code/sunder-exec/'
   ],
   extentionMapping: {
     exe: null,

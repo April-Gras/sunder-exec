@@ -6,18 +6,26 @@
           <NuxtLink to="/">
             <img
               src="https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/avatars/84/84207be4c0db5dd637023062494a50781a9653af_full.jpg"
-              class="tw-w-16 tw-h-16 tw-object-cover tw-overflow-hidden tw-rounded-full"
-            >
+              class="
+                tw-w-16
+                tw-h-16
+                tw-object-cover
+                tw-overflow-hidden
+                tw-rounded-full
+              "
+            />
           </NuxtLink>
-          <NuxtLink to="/jobList">
-            Running Job List
-          </NuxtLink>
+          <NuxtLink to="/jobList"> Running Job List </NuxtLink>
         </div>
       </div>
     </div>
     <div class="mainContainer outerWidthControl">
       <div class="mainWidthLimiter">
-        <div v-if="!isOnIndex" class="tw-mb-2 tw-cursor-pointer" @click="$router.go(-1)">
+        <div
+          v-if="!isOnIndex"
+          class="tw-mb-2 tw-cursor-pointer"
+          @click="$router.go(-1)"
+        >
           &larr; Previous Page
         </div>
         <Nuxt class="tw-w-full tw-relative" />
@@ -28,21 +36,19 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import Vue from "vue"
 
-import Terminal from '~/components/terminal/index.vue'
+import Terminal from "~/components/terminal/index.vue"
 
 export default Vue.extend({
   components: {
-    Terminal
+    Terminal,
   },
   computed: {
-    isOnIndex (): boolean {
-      return this.$route.path === '/'
-    }
+    isOnIndex(): boolean {
+      return this.$route.path === "/"
+    },
   },
-  mounted (): void {
-  }
 })
 </script>
 
@@ -64,7 +70,7 @@ export default Vue.extend({
 }
 
 .mainContainer {
-  @apply  tw-relative;
+  @apply tw-relative;
 }
 
 .minHeightHandler {

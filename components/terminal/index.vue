@@ -6,14 +6,15 @@
         :id="uid"
         :key="uid"
         class="tab"
-        :class="{selected : selectedTabUid === uid}"
+        :class="{ selected: selectedTabUid === uid }"
         @click="selectedTabUid = uid"
       >
         <span>{{ fileName }} - {{ uid }}</span>
         <span
           class="tw-font-bold tw-text-sm tw-inline-block"
           @click.stop="removeUid(uid)"
-        >x</span>
+          >x</span
+        >
       </div>
     </div>
     <transition name="fade" mode="out-in">
@@ -26,54 +27,60 @@
           v-for="({ text, type }, index) in tabs[selectedTabUid].output"
           :key="index"
           :class="type"
-        >{{ text }}</span>
+          >{{ text }}</span
+        >
       </div>
     </transition>
   </div>
 </template>
 
 <script lang="ts">
-import VueMixins from 'vue-typed-mixins'
+import VueMixins from "vue-typed-mixins"
 
-import clientIoMixin from '~/mixins/clientIo'
+import clientIoMixin from "~/mixins/clientIo"
 
 interface TabConfig {
   directoryPath: string
   fileName: string
   output: {
-  text: string,
-    type: 'out' | 'err'
+    text: string
+    type: "out" | "err"
   }[]
   uid: string
 }
 
 export default VueMixins(clientIoMixin).extend({
-  data () {
+  data() {
     return {
-      tabs: {} as Record<string, {
-        directoryPath: string
-        fileName: string
-        output: {
-          text: string,
-          type: 'out' | 'err'
-        }[]
-        uid: string
-      }>,
-      selectedTabUid: null as null | string
+      tabs: {} as Record<
+        string,
+        {
+          directoryPath: string
+          fileName: string
+          output: {
+            text: string
+            type: "out" | "err"
+          }[]
+          uid: string
+        }
+      >,
+      selectedTabUid: null as null | string,
     }
   },
   methods: {
-    postSocketInit () {
-      this.socketListen('streamData', (payload) => {
+    postSocketInit() {
+      this.socketListen("streamData", (payload) => {
         if (!this.tabs[payload.uid]) {
           const buildConfig = {
             directoryPath: payload.directoryPath,
             fileName: payload.fileName,
-            output: [{
-              text: payload.text,
-              type: payload.type
-            }],
-            uid: payload.uid
+            output: [
+              {
+                text: payload.text,
+                type: payload.type,
+              },
+            ],
+            uid: payload.uid,
           } as TabConfig
 
           this.$set(this.tabs, payload.uid, buildConfig)
@@ -81,35 +88,37 @@ export default VueMixins(clientIoMixin).extend({
         } else {
           this.tabs[payload.uid].output.push({
             text: payload.text,
-            type: payload.type
+            type: payload.type,
           })
         }
       })
     },
-    removeUid (uid: string): void {
-      if (this.tabs[uid]) { this.$delete(this.tabs, uid) }
-    }
+    removeUid(uid: string): void {
+      if (this.tabs[uid]) {
+        this.$delete(this.tabs, uid)
+      }
+    },
   },
   watch: {
-    selectedTabUid () {
+    selectedTabUid() {
       this.$nextTick(() => {
         if (this.selectedTabUid) {
           const target = document.getElementById(this.selectedTabUid)
-          const anchor = document.getElementById('tabWrapAnchor')
+          const anchor = document.getElementById("tabWrapAnchor")
 
           console.log({ anchor, target })
           if (target && anchor) {
             const offsetLeft = target.offsetLeft
 
             anchor.scrollTo({
-              behavior: 'smooth',
-              left: offsetLeft
+              behavior: "smooth",
+              left: offsetLeft,
             })
           }
         }
       })
-    }
-  }
+    },
+  },
 })
 </script>
 
@@ -152,10 +161,12 @@ export default VueMixins(clientIoMixin).extend({
   @apply tw-whitespace-pre;
 }
 
-.fade-enter-active, .fade-leave-active {
-  transition: opacity .150s ease-in-out;
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.15s ease-in-out;
 }
-.fade-enter, .fade-leave-to {
+.fade-enter,
+.fade-leave-to {
   opacity: 0;
 }
 </style>

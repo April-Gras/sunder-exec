@@ -5,41 +5,39 @@
 </template>
 
 <script lang="ts">
-import VueMixins from 'vue-typed-mixins'
+import VueMixins from "vue-typed-mixins"
 
-import ButtonMain from '~/components/ui/buttons/main.vue'
+import ButtonMain from "~/components/ui/buttons/main.vue"
 
-import clientIoMixin from '~/mixins/clientIo'
+import clientIoMixin from "~/mixins/clientIo"
 
 export default VueMixins(clientIoMixin).extend({
   components: {
-    ButtonMain
+    ButtonMain,
   },
   methods: {
-    postSocketInit (): void {
+    postSocketInit(): void {
       if (this.socket) {
-        this.socket.on('pong', (payload) => {
+        this.socket.on("pong", (payload) => {
           console.log(payload)
         })
-        this.socketListen('confirmScriptLaunch', (payload) => {
-          console.log('confirmScriptLaunch', { payload })
+        this.socketListen("confirmScriptLaunch", (payload) => {
+          console.log("confirmScriptLaunch", { payload })
         })
       }
     },
-    ping (): void {
-      this.socket?.emit('ping')
+    ping(): void {
+      this.socket?.emit("ping")
       this.$axios({
-        method: 'get',
-        baseURL: location.protocol + '//' + location.hostname + ':' + '3001',
-        url: '/rest-ping'
+        method: "get",
+        baseURL: location.protocol + "//" + location.hostname + ":" + "3001",
+        url: "/rest-ping",
       }).then(() => {
-        console.log('pog')
+        console.log("pog")
       })
-    }
-  }
+    },
+  },
 })
 </script>
 
-<style lang="scss" scoped>
-
-</style>
+<style lang="scss" scoped></style>
