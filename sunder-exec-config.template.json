@@ -1,0 +1,12 @@
+{
+	"targetDirectories": [
+		"./relativePath",
+		"/or/any/absolute/path/aswell"
+	],
+	"extentionMapping": {
+		".js": "node",
+		".sh": "bash",
+		"ps1": "powershell"
+	},
+	"noExtentionExec": null
+}
