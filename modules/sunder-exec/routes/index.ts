@@ -40,6 +40,9 @@ export type PostPayloadDescriptor = {
     directoryPath: string
     fileName: string
   }
+  "/readTargetDirectory": {
+    targetDirectory: string
+  }
 }
 export type AvailablePostRoutes = keyof PostPayloadDescriptor
 export type PostReturnPayloadDescriptor = {
@@ -47,6 +50,10 @@ export type PostReturnPayloadDescriptor = {
     uid: string
     directoryPath: string
     fileName: string
+  }
+  "/readTargetDirectory": {
+    fileNameArray: string[]
+    directoryPath: string
   }
 }
 export type PostValidator<T extends AvailablePostRoutes> = (

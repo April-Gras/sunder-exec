@@ -29,35 +29,36 @@ export default function (
   res.setHeader("Access-Control-Request-Method", "*")
   res.setHeader("Access-Control-Allow-Methods", "OPTIONS, GET, POST")
   res.setHeader("Access-Control-Allow-Headers", "*")
-  res.setHeader("Content-Type", "application/json")
+  if (req.method === "OPTIONS") {
+    res.statusCode = 200
+    res.end()
+  } else {
+    res.setHeader("Content-Type", "application/json")
 
-  console.log(`[API] - ${req.method} on ${req.url}`)
-  switch (req.method) {
-    case "GET":
-      handleGetRequest({
-        req,
-        res,
-        ioManager,
-        processPool,
-        runtimeConfig,
-      })
-      break
-    case "POST":
-      handlePostRequest({
-        req,
-        res,
-        ioManager,
-        processPool,
-        runtimeConfig,
-      })
-      break
-    case "OPTION":
-      res.end("OPTION OK")
-      break
-    default:
-      res.statusCode = 404
-      res.statusMessage = "Url not found"
-      res.end("Url not found")
+    switch (req.method) {
+      case "GET":
+        handleGetRequest({
+          req,
+          res,
+          ioManager,
+          processPool,
+          runtimeConfig,
+        })
+        break
+      case "POST":
+        handlePostRequest({
+          req,
+          res,
+          ioManager,
+          processPool,
+          runtimeConfig,
+        })
+        break
+      default:
+        res.statusCode = 404
+        res.statusMessage = "Url not found"
+        res.end("Url not found")
+    }
   }
 }
 
@@ -78,31 +79,30 @@ function handlePostRequest({
 }: HandleRequestContext): void {
   const { url } = req
 
-  if (isPartOfUrlSet(availablePostRouteNames, url)) {
-    const { validator, handler } =
-      postRoutes.find((e) => e.routeUrl === url) ?? {}
+  if (isPartOfPostSet(url)) {
+    const { validator, handler } = postRoutes[url]
 
-    if (validator && handler) {
-      getJsonFromReq(req).then((body) => {
-        if (validator.bind({ runtimeConfig })(body)) {
-          handler
-            .bind({
-              server: {
-                req,
-                res,
-              },
-              ioManager,
-              runtimeConfig,
-              processPool,
-            })(body)
-            .then(({ err, value }) => {
-              if (value) res.end(JSON.stringify(value))
-              else if (err) resError(res, err.message, err.statusCode)
-            })
-        } else resError(res, "Runtime issue :<", 500)
-      })
-    } else resError(res, "Url not found", 404)
-  }
+    getJsonFromReq(req).then((body) => {
+      if (validator.bind({ runtimeConfig })(body)) {
+        handler
+          .bind({
+            server: {
+              req,
+              res,
+            },
+            ioManager,
+            runtimeConfig,
+            processPool,
+            // @ts-ignore
+          })(body)
+          // @ts-ignore
+          .then(({ err, value }) => {
+            if (value) res.end(JSON.stringify(value))
+            else if (err) resError(res, err.message, err.statusCode)
+          })
+      } else resError(res, "Runtime issue :<", 500)
+    })
+  } else resError(res, "Url not found", 404)
 }
 
 function handleGetRequest({
@@ -138,9 +138,13 @@ function handleGetRequest({
   } else resError(res, "Url not found", 404)
 }
 
+function isPartOfPostSet(url: any & string): url is AvailablePostRoutes {
+  return availablePostRouteNames.includes(url)
+}
+
 function isPartOfUrlSet<T extends AvailablePostRoutes | AvailableGetRoutes>(
   urlSet: string[],
   url?: string
-): url is T {
+): boolean {
   return urlSet.includes(url ?? "")
 }

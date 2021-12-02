@@ -1,3 +1,5 @@
+import consola from "consola"
+import Vue from "vue"
 import { Plugin, Context } from "@nuxt/types"
 import {
   AvailablePostRoutes,
@@ -6,15 +8,14 @@ import {
   GetPayloadReturnDescriptor,
   AvailableGetRoutes,
 } from "~/modules/sunder-exec/routes/index"
-
-import { ApiPost } from "~/types/postApi"
 import { ApiGet } from "~/types/getApi"
+import { ApiPost } from "~/types/postApi"
 
 function getBaseURL() {
   if (process.client) {
-    return `${window.location.protocol}//${window.location.hostname}:3001/`
+    return `${window.location.protocol}//${window.location.hostname}:3001`
   } else {
-    return `${process.env.HOST}:3001/`
+    return `http://${process.env.HOST ?? "localhost"}:3001`
   }
 }
 
@@ -41,14 +42,34 @@ const axiosApiPlugin: Plugin = function (context, inject) {
   const {
     app: { $axios },
   } = context
+  $axios.onRequest((config) => {
+    consola.info(`${config.method} on ${config.baseURL}${config.url}`)
+  })
+  $axios.onResponse((response) => {
+    consola.success(
+      `${response.status} for ${response.config.baseURL}${response.config.url}`
+    )
+  })
+  $axios.onError((err) => {
+    consola.error(err)
+  })
+  $axios.onRequestError((err) => {
+    consola.info(`${err.code} on ${err.config.url}`)
+    console.error(err)
+  })
+
   const builtApiPost = apiPost.bind({ $axios })
   const builtApiGet = apiGet.bind({ $axios })
 
+  // @ts-ignore for the love of all that is holly, I can't figure this one out :(
   context.$postApi = builtApiPost
   inject("$postApi", builtApiPost)
 
   context.$getApi = builtApiGet
-  inject("$$getApi", builtApiGet)
+  inject("$getApi", builtApiGet)
+
+  Vue.prototype.$getApi = builtApiGet
+  Vue.prototype.$postApi = builtApiPost
 }
 
 declare module "vue/types/vue" {

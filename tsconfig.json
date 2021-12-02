@@ -23,7 +23,9 @@
       "@/*": [
         "./*"
       ],
-      "module-routes": ["./modules/sunder-exec/routes/index"]
+      "module-routes": [
+        "./modules/sunder-exec/routes/index"
+      ],
     },
     "types": [
       "@nuxt/types",

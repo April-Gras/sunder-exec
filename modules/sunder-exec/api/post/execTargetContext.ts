@@ -4,17 +4,17 @@ import {
   evaluateIfFailure,
 } from "../../routes/index"
 
-export const postExecTargetContextValidator = function (value: any): boolean {
-  return (
-    value !== undefined &&
-    value instanceof Object &&
-    typeof value.directoryPath === "string" &&
-    typeof value.fileName === "string"
-  )
-} as PostValidator<"/execTargetContext">
-
-export const postExecTargetContextHandler: PostHandler<"/execTargetContext"> =
-  function (args) {
+export default {
+  routeUrl: "/execTargetContext" as const,
+  validator: function (value: any): boolean {
+    return (
+      value !== undefined &&
+      value instanceof Object &&
+      typeof value.directoryPath === "string" &&
+      typeof value.fileName === "string"
+    )
+  } as PostValidator<"/execTargetContext">,
+  handler: function (args) {
     return new Promise((resolve) => {
       this.processPool
         .addNewProcessFromDirectoryAndFileName(
@@ -45,4 +45,5 @@ export const postExecTargetContextHandler: PostHandler<"/execTargetContext"> =
           })
         })
     })
-  }
+  } as PostHandler<"/execTargetContext">,
+} as const

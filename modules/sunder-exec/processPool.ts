@@ -35,7 +35,7 @@ class ProcessDefinition {
   }
 
   setUpExecutionStreams(): void {
-    if (this._streamsAreSetup) {
+    if (!this._streamsAreSetup) {
       this._process.stdout?.on("data", (string: string) => {
         this._ioManager.emit("streamData", {
           directoryPath: this.directoryPath,
@@ -56,7 +56,7 @@ class ProcessDefinition {
       })
     } else
       console.warn(
-        `[ProcessDefinition] - Process ${this.uid} already has streams setup`
+        `[ProcessDefinition] - Process ${this.uid} ${this.fileName} already has streams setup`
       )
   }
 }

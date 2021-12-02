@@ -1,48 +1,14 @@
-import getRouteDefinitionArray from "../api/get/index"
-import postRouteDefinitionArray from "../api/post/index"
-import {
-  AvailablePostRoutes,
-  PostHandler,
-  PostValidator,
-  AvailableGetRoutes,
-  GetHandler,
-} from "./index"
+import readTargetDirectory from "../api/post/readTargetDirectory"
+import execTargetContext from "../api/post/execTargetContext"
+import readDirectoryFromConfig from "../api/get/readDirectoryFromConfig"
 
-function createPostRoute<T extends AvailablePostRoutes>(
-  routeUrl: T,
-  handler: PostHandler<T>,
-  validator: PostValidator<T>
-): {
-  handler: PostHandler<T>
-  validator: PostValidator<T>
-  routeUrl: T
-} {
-  return {
-    handler,
-    validator,
-    routeUrl,
-  }
-}
-
-export const postRoutes = postRouteDefinitionArray.map((e) =>
-  createPostRoute(e.routeUrl, e.handler, e.validator)
+export const postRoutes = {
+  [readTargetDirectory.routeUrl]: readTargetDirectory,
+  [execTargetContext.routeUrl]: execTargetContext,
+} as const
+export const availablePostRouteNames = Object.values(postRoutes).map(
+  (e) => e.routeUrl
 )
-export const availablePostRouteNames = postRoutes.map((e) => e.routeUrl)
 
-function createGetRoute<T extends AvailableGetRoutes>(
-  routeUrl: T,
-  handler: GetHandler<T>
-): {
-  handler: GetHandler<T>
-  routeUrl: T
-} {
-  return {
-    routeUrl,
-    handler,
-  }
-}
-
-export const getRoutes = getRouteDefinitionArray.map((e) =>
-  createGetRoute(e.routeUrl, e.handler)
-)
+export const getRoutes = [readDirectoryFromConfig] as const
 export const getRouteNames = getRoutes.map((e) => e.routeUrl)

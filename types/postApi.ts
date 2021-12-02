@@ -2,7 +2,7 @@ import {
   AvailablePostRoutes,
   PostReturnPayloadDescriptor,
   PostPayloadDescriptor,
-} from "~/modules/sunder-exec/routes/index"
+} from "module-routes"
 
 export type ApiPost = <T extends AvailablePostRoutes>(
   url: T,
