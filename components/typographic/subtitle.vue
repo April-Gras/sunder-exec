@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import Vue from "vue"
 
 export default Vue.extend({})
 </script>
@@ -33,7 +33,8 @@ export default Vue.extend({})
 @keyframes pulseColor {
   from {
     @apply tw-bg-blue-300;
-  } to {
+  }
+  to {
     @apply tw-bg-blue-100;
   }
 }
