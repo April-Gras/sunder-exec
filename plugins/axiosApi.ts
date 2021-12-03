@@ -65,6 +65,7 @@ const axiosApiPlugin: Plugin = function (context, inject) {
   context.$postApi = builtApiPost
   inject("$postApi", builtApiPost)
 
+  // @ts-ignore same issue as for the post api
   context.$getApi = builtApiGet
   inject("$getApi", builtApiGet)
 

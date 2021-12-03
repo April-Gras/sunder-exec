@@ -1,5 +1,5 @@
 import { RuntimeConfiguration } from "../configReader"
-import { ProcessPool } from "../processPool"
+import { ProcessPool, ProcessInfos } from "../processPool"
 import { SocketIoManager } from "../socket"
 import { ReqResBundle } from "../api/index"
 
@@ -29,6 +29,7 @@ export type GetPayloadReturnDescriptor = {
     fileNameArray: string[]
     directoryPath: string
   }[]
+  "/currentProcesses": ProcessInfos[]
 }
 export type AvailableGetRoutes = keyof GetPayloadReturnDescriptor
 export type GetHandler<T extends AvailableGetRoutes> = (

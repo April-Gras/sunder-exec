@@ -1,5 +1,7 @@
 import Vue from "vue"
 
+import consola from "consola"
+
 import { io } from "socket.io-client"
 
 import {
@@ -18,10 +20,11 @@ export default Vue.extend({
   mounted() {
     this.socket = this.$clientIoManager.socket("/")
     this.socket.on("connect", () => {
-      console.log(this.socket?.connected)
+      if (this.socket?.connected) consola.success("[SOCKET] - Connected")
+      else consola.error("[SOCKET] - Failed to connect")
     })
     this.socket.on("disconnect", () => {
-      console.log(this.socket?.connected)
+      consola.info("[SOCKET] - Disconnected")
     })
     this.postSocketInit(this.socket)
   },
@@ -29,8 +32,8 @@ export default Vue.extend({
     this.socket?.disconnect()
   },
   methods: {
-    postSocketInit(socket: ReturnType<typeof io>) {
-      console.log("No handler for post io init :(", socket)
+    postSocketInit(_socket: ReturnType<typeof io>) {
+      consola.warn("[SOCKET] - No handler for post io init")
     },
     socketListen<T extends AvailableSocketEventsToClient>(
       eventName: T,

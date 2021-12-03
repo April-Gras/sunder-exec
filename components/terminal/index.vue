@@ -106,7 +106,6 @@ export default VueMixins(clientIoMixin).extend({
           const target = document.getElementById(this.selectedTabUid)
           const anchor = document.getElementById("tabWrapAnchor")
 
-          console.log({ anchor, target })
           if (target && anchor) {
             const offsetLeft = target.offsetLeft
 

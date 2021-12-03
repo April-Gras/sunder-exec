@@ -15,12 +15,12 @@
 
 <script lang="ts">
 import Vue from "vue"
+import consola from "consola"
 
 import { GetPayloadReturnDescriptor } from "module-routes"
 import TypoTitle from "~/components/typographic/title.vue"
 import FileReading from "~/components/fileReading/index.vue"
 
-// TODO establish _AsyncData interface
 type _AsyncData = {
   fileConfigs: GetPayloadReturnDescriptor
 }
@@ -34,12 +34,11 @@ export default Vue.extend({
     try {
       const fileConfigs = await $getApi("/readDirectoryFromConfig")
 
-      console.log({ fileConfigs })
       return {
         fileConfigs,
       }
     } catch (err) {
-      console.log(err)
+      consola.error(err)
       return { fileConfigs: [] }
     }
   },

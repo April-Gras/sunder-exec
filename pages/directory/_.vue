@@ -65,8 +65,7 @@ export default VueMixins(clientIoMixin).extend({
       return await $postApi("/readTargetDirectory", {
         targetDirectory,
       })
-    } catch (err) {
-      console.log(err)
+    } catch (_err) {
       error({
         message: "Bruh please stop lmfao",
         statusCode: 404,

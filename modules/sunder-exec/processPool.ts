@@ -12,7 +12,7 @@ type ProcessAttachedUid = string
 
 class ProcessDefinition {
   uid: ProcessAttachedUid
-  private _process: ChildProcess
+  process: ChildProcess
   private _ioManager: SocketIoManager
   private _streamsAreSetup: boolean
   fileName: string
@@ -26,7 +26,7 @@ class ProcessDefinition {
   ) {
     process.stdout?.setEncoding("utf-8")
     process.stderr?.setEncoding("utf-8")
-    this._process = process
+    this.process = process
     this._ioManager = ioManager
     this.uid = uidgen.generateSync()
     this._streamsAreSetup = false
@@ -34,9 +34,15 @@ class ProcessDefinition {
     this.fileName = fileName
   }
 
+  getInfos() {
+    const { pid, killed, exitCode, connected } = this.process
+
+    return { pid, killed, exitCode, connected } as const
+  }
+
   setUpExecutionStreams(): void {
     if (!this._streamsAreSetup) {
-      this._process.stdout?.on("data", (string: string) => {
+      this.process.stdout?.on("data", (string: string) => {
         this._ioManager.emit("streamData", {
           directoryPath: this.directoryPath,
           fileName: this.fileName,
@@ -45,7 +51,7 @@ class ProcessDefinition {
           text: string,
         })
       })
-      this._process.stderr?.on("data", (string: string) => {
+      this.process.stderr?.on("data", (string: string) => {
         this._ioManager.emit("streamData", {
           directoryPath: this.directoryPath,
           fileName: this.fileName,
@@ -61,13 +67,17 @@ class ProcessDefinition {
   }
 }
 
+export type ProcessInfos = ReturnType<
+  InstanceType<typeof ProcessDefinition>["getInfos"]
+>
+
 export class ProcessPool {
-  private _pool: ProcessDefinition[]
+  pool: ProcessDefinition[]
   private _configuration: RuntimeConfiguration
   private _ioManager: SocketIoManager
 
   constructor(configuration: RuntimeConfiguration, ioManager: SocketIoManager) {
-    this._pool = []
+    this.pool = []
     this._configuration = configuration
     this._ioManager = ioManager
   }
@@ -99,7 +109,7 @@ export class ProcessPool {
               this._ioManager
             )
 
-            this._pool.push(definition)
+            this.pool.push(definition)
             definition.setUpExecutionStreams()
             resolve({ value: definition.uid, err: null })
           } else {
@@ -127,6 +137,6 @@ export class ProcessPool {
   public findProcessByUid(
     uid: ProcessAttachedUid
   ): ProcessDefinition | undefined {
-    return this._pool.find((e) => e.uid === uid)
+    return this.pool.find((e) => e.uid === uid)
   }
 }

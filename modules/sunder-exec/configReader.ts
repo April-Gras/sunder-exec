@@ -1,5 +1,6 @@
 import path from "path"
 import { readFile } from "fs"
+import consola from "consola"
 
 export interface RuntimeConfiguration {
   targetDirectories: string[]
@@ -33,29 +34,35 @@ export function getRuntimeExtention(): Promise<RuntimeConfiguration> {
 
 function contentIsValidConfig(data: any): data is RuntimeConfiguration {
   if (!valueIsObject(data)) {
-    console.log("Missing data")
+    consola.warn("[CONFIG VALIDATION] - Missing data")
     return false
   }
   if (!valueIsArray(data.targetDirectories)) {
-    console.log("targetDirectory is not an array")
+    consola.warn("[CONFIG VALIDATION] - targetDirectory is not an array")
     return false
   }
   if (!arrayIsFilledWithString(data.targetDirectories)) {
-    console.log("Some content in targetDirectories is not a string")
+    consola.warn(
+      "[CONFIG VALIDATION] - Some content in targetDirectories is not a string"
+    )
     return false
   }
   if (!valueIsObject(data.extentionMapping)) {
-    console.log("extentionMapping is not an object")
+    consola.warn("[CONFIG VALIDATION] - extentionMapping is not an object")
     return false
   }
   if (!objectContainsOnlyStringsOrNull(data.extentionMapping)) {
-    console.log("Some extentionMapping value are not strings")
+    consola.warn(
+      "[CONFIG VALIDATION] - Some extentionMapping value are not strings"
+    )
     return false
   }
   if (
     !(data.noExtentionExec === null || typeof data.noExtentionExec === "string")
   ) {
-    console.log("noExtentionExec is neither null nor is it a string")
+    consola.warn(
+      "[CONFIG VALIDATION] - noExtentionExec is neither null nor is it a string"
+    )
     return false
   } else {
     return true

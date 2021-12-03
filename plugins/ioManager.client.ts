@@ -1,7 +1,6 @@
 import Vue from "vue"
 import { Manager } from "socket.io-client"
 
-console.log("Injecting manager client side")
 const manager = new Manager({
   port: 3002,
 })

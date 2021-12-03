@@ -34,8 +34,7 @@ export default {
             resolve({ err: result.err, value: null })
           }
         })
-        .catch((err) => {
-          console.log(err)
+        .catch(() => {
           resolve({
             err: {
               message: "Runtime error :<",

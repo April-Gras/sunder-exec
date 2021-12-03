@@ -1,3 +1,4 @@
+import consola from "consola"
 import { Server as SocketIoServer } from "socket.io"
 
 export type SocketToClientEventPayloads = {
@@ -40,7 +41,7 @@ class SocketManager {
     eventName: T,
     payload: SocketToClientEventPayloads[T]
   ): void {
-    console.log(`[SOCKET IO] - Emitting ${eventName} to client`)
+    consola.info(`[SOCKET IO] - Emitting ${eventName} to client`)
     this.io.emit(eventName, payload)
   }
 }
