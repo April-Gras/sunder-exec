@@ -44,18 +44,18 @@ export type PostPayloadDescriptor = {
   "/readTargetDirectory": {
     targetDirectory: string
   }
+  "/processByUid": {
+    uid: ProcessInfos["uid"]
+  }
 }
 export type AvailablePostRoutes = keyof PostPayloadDescriptor
 export type PostReturnPayloadDescriptor = {
-  "/execTargetContext": {
-    uid: string
-    directoryPath: string
-    fileName: string
-  }
+  "/execTargetContext": ProcessInfos
   "/readTargetDirectory": {
     fileNameArray: string[]
     directoryPath: string
   }
+  "/processByUid": ProcessInfos
 }
 export type PostValidator<T extends AvailablePostRoutes> = (
   this: { runtimeConfig: RuntimeConfiguration },

@@ -42,6 +42,7 @@
 
 <script lang="ts">
 import VueMixins from "vue-typed-mixins"
+import { mapMutations } from "vuex"
 
 import { PostReturnPayloadDescriptor } from "module-routes"
 import TypoTitle from "~/components/typographic/title.vue"
@@ -76,10 +77,15 @@ export default VueMixins().extend({
     return out as typeof out & _AsyncData
   },
   methods: {
+    ...mapMutations({
+      ADD_PROCESS_DEFINITION: "ADD_PROCESS_DEFINITION",
+    }),
     launchProgram(fileName: string): void {
       this.$postApi("/execTargetContext", {
         directoryPath: this.directoryPath,
         fileName,
+      }).then((processDefinition) => {
+        this.ADD_PROCESS_DEFINITION(processDefinition)
       })
     },
   },

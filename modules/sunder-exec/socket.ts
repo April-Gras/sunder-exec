@@ -1,11 +1,8 @@
 import { Server as SocketIoServer } from "socket.io"
+import { ProcessInfos } from "./processPool"
 
 export type SocketToClientEventPayloads = {
-  confirmScriptLaunch: {
-    directoryPath: string
-    fileName: string
-    uid: string
-  }
+  confirmScriptLaunch: ProcessInfos
   streamData: {
     directoryPath: string
     fileName: string

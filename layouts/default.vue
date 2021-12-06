@@ -4,25 +4,17 @@
       <div class="outerWidthControl">
         <div class="mainWidthLimiter">
           <div
-            class="
-              tw-flex tw-gap-4
-              md:tw-gap-6
-              tw-justify-start tw-items-center
-            "
+            class="tw-flex tw-gap-4 md:tw-gap-6 tw-justify-start tw-items-center"
           >
             <NuxtLink class="tw-block" to="/">
               <img
                 src="https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/avatars/84/84207be4c0db5dd637023062494a50781a9653af_full.jpg"
-                class="
-                  tw-w-16
-                  tw-h-16
-                  tw-object-cover
-                  tw-overflow-hidden
-                  tw-rounded-full
-                "
+                class="tw-w-16 tw-h-16 tw-object-cover tw-overflow-hidden tw-rounded-full"
               />
             </NuxtLink>
-            <NuxtLink class="tw-block" to="/jobs"> Running Job List </NuxtLink>
+            <NuxtLink class="tw-block" to="/process">
+              <ProcessCounter />
+            </NuxtLink>
           </div>
         </div>
       </div>
@@ -36,12 +28,30 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue"
+import VueMixins from "vue-typed-mixins"
+import { mapMutations } from "vuex"
 
-export default Vue.extend({
+import ProcessCounter from "~/components/layout/processCounter.vue"
+
+import clientIoMixin from "~/mixins/clientIo"
+
+export default VueMixins(clientIoMixin).extend({
+  components: {
+    ProcessCounter,
+  },
   computed: {
     isOnIndex(): boolean {
       return this.$route.path === "/"
+    },
+  },
+  methods: {
+    ...mapMutations({
+      ADD_PROCESS_DEFINITION: "ADD_PROCESS_DEFINITION",
+    }),
+    postSocketInit(): void {
+      this.socketListen("confirmScriptLaunch", (processDefinition) => {
+        this.ADD_PROCESS_DEFINITION(processDefinition)
+      })
     },
   },
 })

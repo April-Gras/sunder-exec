@@ -30,12 +30,22 @@ class ProcessDefinition {
     this._streamsAreSetup = false
     this.directoryPath = directoryPath
     this.fileName = fileName
+    this._ioManager.emit("confirmScriptLaunch", this.getInfos())
   }
 
   getInfos() {
     const { pid, killed, exitCode, connected } = this.process
+    const { uid, fileName, directoryPath } = this
 
-    return { pid, killed, exitCode, connected } as const
+    return {
+      pid,
+      killed,
+      exitCode,
+      connected,
+      uid,
+      fileName,
+      directoryPath,
+    } as const
   }
 
   setUpExecutionStreams(): void {
@@ -85,7 +95,7 @@ export class ProcessPool {
   public addNewProcessFromDirectoryAndFileName(
     directoryPath: string,
     fileName: string
-  ): Promise<ApiResult<string>> {
+  ): Promise<ApiResult<ProcessInfos>> {
     return new Promise((resolve) => {
       const cleanedDirectoryPath = path.normalize(directoryPath)
       const cleanedFileName = path.normalize(fileName)
@@ -111,7 +121,7 @@ export class ProcessPool {
 
             this.pool.push(definition)
             definition.setUpExecutionStreams()
-            resolve({ value: definition.uid, err: null })
+            resolve({ value: definition.getInfos(), err: null })
           } else {
             resolve({
               value: null,

@@ -12,7 +12,9 @@ export const mutations: MutationTree<RootState> = {
     state.processes.push(...processes)
   },
   ADD_PROCESS_DEFINITION(state, process: ClientSideProcessDefinition) {
-    state.processes.push(process)
+    if (state.processes.every((e) => e.uid !== process.uid))
+      state.processes.push(process)
+    // TODO Should we handle duplicate addition ?
   },
 }
 

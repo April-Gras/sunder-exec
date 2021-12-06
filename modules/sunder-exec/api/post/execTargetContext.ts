@@ -25,10 +25,7 @@ export default {
           if (!evaluateIfFailure(result)) {
             resolve({
               err: null,
-              value: {
-                ...args,
-                uid: result.value,
-              },
+              value: result.value,
             })
           } else {
             resolve({ err: result.err, value: null })
