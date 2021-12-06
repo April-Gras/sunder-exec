@@ -24,8 +24,6 @@ class ProcessDefinition {
     process: ChildProcess,
     ioManager: SocketIoManager
   ) {
-    process.stdout?.setEncoding("utf-8")
-    process.stderr?.setEncoding("utf-8")
     this.process = process
     this._ioManager = ioManager
     this.uid = uidgen.generateSync()
@@ -42,6 +40,8 @@ class ProcessDefinition {
 
   setUpExecutionStreams(): void {
     if (!this._streamsAreSetup) {
+      process.stdout?.setEncoding("utf-8")
+      process.stderr?.setEncoding("utf-8")
       this.process.stdout?.on("data", (string: string) => {
         this._ioManager.emit("streamData", {
           directoryPath: this.directoryPath,

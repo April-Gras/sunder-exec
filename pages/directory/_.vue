@@ -47,11 +47,9 @@ import { PostReturnPayloadDescriptor } from "module-routes"
 import TypoTitle from "~/components/typographic/title.vue"
 import ButtonMain from "~/components/ui/buttons/main.vue"
 
-import clientIoMixin from "~/mixins/clientIo"
-
 type _AsyncData = PostReturnPayloadDescriptor["/readTargetDirectory"]
 
-export default VueMixins(clientIoMixin).extend({
+export default VueMixins().extend({
   components: {
     TypoTitle,
     ButtonMain,
@@ -82,11 +80,6 @@ export default VueMixins(clientIoMixin).extend({
       this.$postApi("/execTargetContext", {
         directoryPath: this.directoryPath,
         fileName,
-      })
-    },
-    postSocketInit() {
-      this.socketListen("confirmScriptLaunch", (payload) => {
-        console.log(payload.directoryPath, payload.fileName)
       })
     },
   },

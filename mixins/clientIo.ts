@@ -18,18 +18,17 @@ export default Vue.extend({
     }
   },
   mounted() {
-    this.socket = this.$clientIoManager.socket("/")
-    this.socket.on("connect", () => {
-      if (this.socket?.connected) consola.success("[SOCKET] - Connected")
-      else consola.error("[SOCKET] - Failed to connect")
-    })
-    this.socket.on("disconnect", () => {
-      consola.info("[SOCKET] - Disconnected")
-    })
-    this.postSocketInit(this.socket)
-  },
-  beforeDestroy() {
-    this.socket?.disconnect()
+    if (!this.socket) {
+      this.socket = this.$clientIoManager
+      this.socket.on("connect", () => {
+        if (this.socket?.connected) consola.success("[SOCKET] - Connected")
+        else consola.error("[SOCKET] - Failed to connect")
+      })
+      this.socket.on("disconnect", () => {
+        consola.info("[SOCKET] - Disconnected")
+      })
+      this.postSocketInit(this.socket)
+    }
   },
   methods: {
     postSocketInit(_socket: ReturnType<typeof io>) {
@@ -40,6 +39,7 @@ export default Vue.extend({
       handler: (payload: SocketToClientEventPayloads[T]) => any
     ) {
       if (this.socket !== null) {
+        consola.info(`[SOCKET] - Setup listener on ${eventName}`)
         // @ts-ignore trust lmfao
         this.socket.on(eventName, handler)
       } else {

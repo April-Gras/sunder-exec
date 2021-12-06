@@ -1,4 +1,3 @@
-import consola from "consola"
 import { Server as SocketIoServer } from "socket.io"
 
 export type SocketToClientEventPayloads = {
@@ -27,21 +26,12 @@ class SocketManager {
         methods: ["GET", "POST"],
       },
     })
-
-    this.io.on("connect", (socket) => {
-      // Setup debug events
-      socket.on("ping", () => {
-        this.io.emit("pong", "from io")
-        socket.emit("pong", "from socket")
-      })
-    })
   }
 
   emit<T extends AvailableSocketEventsToClient>(
     eventName: T,
     payload: SocketToClientEventPayloads[T]
   ): void {
-    consola.info(`[SOCKET IO] - Emitting ${eventName} to client`)
     this.io.emit(eventName, payload)
   }
 }

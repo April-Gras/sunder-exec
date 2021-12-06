@@ -3,33 +3,33 @@
     <div class="tw-bg-gray-600 tw-w-full tw-sticky tw-top-0 tw-z-10">
       <div class="outerWidthControl">
         <div class="mainWidthLimiter">
-          <NuxtLink to="/">
-            <img
-              src="https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/avatars/84/84207be4c0db5dd637023062494a50781a9653af_full.jpg"
-              class="
-                tw-w-16
-                tw-h-16
-                tw-object-cover
-                tw-overflow-hidden
-                tw-rounded-full
-              "
-            />
-          </NuxtLink>
-          <NuxtLink to="/jobList"> Running Job List </NuxtLink>
+          <div
+            class="
+              tw-flex tw-gap-4
+              md:tw-gap-6
+              tw-justify-start tw-items-center
+            "
+          >
+            <NuxtLink class="tw-block" to="/">
+              <img
+                src="https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/avatars/84/84207be4c0db5dd637023062494a50781a9653af_full.jpg"
+                class="
+                  tw-w-16
+                  tw-h-16
+                  tw-object-cover
+                  tw-overflow-hidden
+                  tw-rounded-full
+                "
+              />
+            </NuxtLink>
+            <NuxtLink class="tw-block" to="/jobs"> Running Job List </NuxtLink>
+          </div>
         </div>
       </div>
     </div>
     <div class="mainContainer outerWidthControl">
       <div class="mainWidthLimiter">
-        <div
-          v-if="!isOnIndex"
-          class="tw-mb-2 tw-cursor-pointer"
-          @click="$router.go(-1)"
-        >
-          &larr; Previous Page
-        </div>
         <Nuxt class="tw-w-full tw-relative" />
-        <Terminal />
       </div>
     </div>
   </div>
@@ -38,12 +38,7 @@
 <script lang="ts">
 import Vue from "vue"
 
-import Terminal from "~/components/terminal/index.vue"
-
 export default Vue.extend({
-  components: {
-    Terminal,
-  },
   computed: {
     isOnIndex(): boolean {
       return this.$route.path === "/"
