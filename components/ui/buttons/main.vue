@@ -11,14 +11,14 @@ export default Vue.extend({})
 
 <style lang="scss" scoped>
 .btn {
-  @apply tw-rounded tw-cursor-pointer tw-bg-blue-300 tw-text-white tw-font-semibold tw-p-4;
+  @apply tw-rounded tw-cursor-pointer tw-bg-blue-700 tw-text-white tw-font-semibold tw-p-4;
   @apply tw-transition tw-duration-150 tw-ease-in-out;
   &:focus() {
     @apply tw-outline-none;
   }
 
   &:hover {
-    @apply tw-bg-blue-200;
+    @apply tw-bg-blue-500;
   }
 }
 </style>

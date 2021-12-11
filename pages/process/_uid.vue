@@ -1,26 +1,31 @@
 <template>
-  <ProcessElement :process="process" />
+  <div>
+    <ProcessElement :process="inspectedProcess.process" />
+    <Terminal :inspected-process="inspectedProcess" />
+  </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue"
 
-import ProcessElement from "~/components/process/element.vue"
+import ProcessElement from "~/components/process/elementDisplay.vue"
+import Terminal from "~/components/terminal/index.vue"
 
-import { ClientSideProcessDefinition } from "~/types/clientSideProcessDefinition"
+import { PostReturnPayloadDescriptor } from "module-routes"
 
 type _AsyncData = {
-  process: ClientSideProcessDefinition
+  inspectedProcess: PostReturnPayloadDescriptor["/processByUid"]
 }
 
 export default Vue.extend({
   components: {
+    Terminal,
     ProcessElement,
   },
   async asyncData({ $postApi, error, params }) {
     try {
       return {
-        process: await $postApi("/processByUid", {
+        inspectedProcess: await $postApi("/processByUid", {
           uid: params.uid,
         }),
       }

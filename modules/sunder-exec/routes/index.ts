@@ -1,5 +1,5 @@
 import { RuntimeConfiguration } from "../configReader"
-import { ProcessPool, ProcessInfos } from "../processPool"
+import { ProcessPool, ProcessInfos, ProcessLog } from "../processPool"
 import { SocketIoManager } from "../socket"
 import { ReqResBundle } from "../api/index"
 
@@ -55,7 +55,10 @@ export type PostReturnPayloadDescriptor = {
     fileNameArray: string[]
     directoryPath: string
   }
-  "/processByUid": ProcessInfos
+  "/processByUid": {
+    process: ProcessInfos
+    logs: ProcessLog
+  }
 }
 export type PostValidator<T extends AvailablePostRoutes> = (
   this: { runtimeConfig: RuntimeConfiguration },

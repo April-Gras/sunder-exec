@@ -6,6 +6,7 @@ export interface RuntimeConfiguration {
   targetDirectories: string[]
   extentionMapping: Record<string, string>
   noExtentionExec: null | string
+  logDirectory: "./.sunder-exec"
 }
 
 export function getRuntimeExtention(): Promise<RuntimeConfiguration> {
@@ -19,10 +20,13 @@ export function getRuntimeExtention(): Promise<RuntimeConfiguration> {
         if (err) {
           reject(err)
         } else {
-          data = JSON.parse(data)
+          const config = JSON.parse(data)
 
-          if (contentIsValidConfig(data)) {
-            resolve(data)
+          if (contentIsValidConfig(config)) {
+            resolve({
+              ...config,
+              logDirectory: "./.sunder-exec",
+            })
           } else {
             reject(new Error("Config is invalid vro"))
           }

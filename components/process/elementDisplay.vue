@@ -7,6 +7,9 @@
       >
       <span class="sm:tw-flex-shrink-0">/{{ process.fileName }}</span>
     </div>
+    <div>
+      <ElementTimeTracker :timestamp="process.timestamp" />
+    </div>
     <ElementStatus :killed="process.killed" :exit-code="process.exitCode" />
   </NuxtLink>
 </template>
@@ -14,13 +17,15 @@
 <script lang="ts">
 import Vue, { PropOptions } from "vue"
 
-import ElementStatus from "./element/status.vue"
+import ElementStatus from "./elementDisplay/processStatus.vue"
+import ElementTimeTracker from "./elementDisplay/timeTracker.vue"
 
 import { ClientSideProcessDefinition } from "~/types/clientSideProcessDefinition"
 
 export default Vue.extend({
   components: {
     ElementStatus,
+    ElementTimeTracker,
   },
   props: {
     process: {
@@ -33,15 +38,15 @@ export default Vue.extend({
 
 <style lang="scss" scoped>
 .processElementWrapper {
-  @apply tw-grid tw-gap-4 tw-bg-gray-600 tw-text-white tw-grid-cols-1 tw-px-2 tw-py-4 tw-cursor-pointer tw-rounded-sm;
-  @apply tw-transition-colors tw-duration-150 tw-ease-in-out;
+  @apply tw-grid tw-gap-4 tw-bg-gray-600 tw-text-white tw-grid-cols-1 tw-p-4 tw-cursor-pointer tw-rounded-sm tw-shadow;
+  @apply tw-transition tw-duration-150 tw-ease-in-out;
 
   &:hover {
-    @apply tw-bg-gray-400;
+    @apply tw-bg-gray-400 tw-shadow-hover;
   }
 
-  @screen sm {
-    @apply tw-grid-cols-2;
+  @screen 600 {
+    @apply tw-grid-cols-3;
 
     > * {
       @apply tw-flex tw-justify-center tw-items-center;

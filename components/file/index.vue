@@ -1,16 +1,7 @@
 <template>
   <NuxtLink
     :to="link"
-    class="
-      tw-rounded-lg
-      tw-bg-gray-600
-      tw-p-4
-      tw-transition
-      tw-duration-150
-      tw-ease-in-out
-      hover:tw-bg-gray-700
-      tw-cursor-pointer
-    "
+    class="tw-rounded-lg tw-bg-gray-600 tw-p-4 tw-transition tw-duration-150 tw-ease-in-out hover:tw-bg-gray-700 tw-cursor-pointer"
   >
     <TypoSubtitle>{{ config.directoryPath }}</TypoSubtitle>
     <div class="tw-text-sm">

@@ -1,5 +1,5 @@
 import path from "path"
-import fs from "fs"
+import fs, { WriteStream } from "fs"
 import { ChildProcess, exec } from "child_process"
 import UidGen from "uid-generator"
 import { RuntimeConfiguration } from "./configReader"
@@ -10,32 +10,50 @@ const uidgen = new UidGen()
 
 type ProcessAttachedUid = string
 
-class ProcessDefinition {
+export type ProcessLog = {
+  directoryPath: string
+  fileName: string
   uid: ProcessAttachedUid
-  process: ChildProcess
+  type: "out" | "err"
+  text: string
+}
+
+class ProcessDefinition {
+  readonly uid: ProcessAttachedUid
+  readonly process: ChildProcess
   private _ioManager: SocketIoManager
   private _streamsAreSetup: boolean
-  fileName: string
-  directoryPath: string
+  private _launchDate: Date
+  private _logWriteStream: WriteStream
+  private _runtimeConfig: RuntimeConfiguration
+  readonly fileName: string
+  readonly directoryPath: string
 
   constructor(
+    uid: ProcessAttachedUid,
+    execString: string,
     fileName: string,
     directoryPath: string,
-    process: ChildProcess,
-    ioManager: SocketIoManager
+    ioManager: SocketIoManager,
+    writeStream: WriteStream,
+    runtimeConfig: RuntimeConfiguration
   ) {
-    this.process = process
+    this.uid = uid
+    this._runtimeConfig = runtimeConfig
     this._ioManager = ioManager
-    this.uid = uidgen.generateSync()
     this._streamsAreSetup = false
     this.directoryPath = directoryPath
     this.fileName = fileName
+    this._launchDate = new Date()
+    this._logWriteStream = writeStream
+    this.process = exec(execString)
+    this.setUpExecutionStreams()
     this._ioManager.emit("confirmScriptLaunch", this.getInfos())
   }
 
   getInfos() {
     const { pid, killed, exitCode, connected } = this.process
-    const { uid, fileName, directoryPath } = this
+    const { uid, fileName, directoryPath, _launchDate } = this
 
     return {
       pid,
@@ -45,7 +63,20 @@ class ProcessDefinition {
       uid,
       fileName,
       directoryPath,
+      timestamp: _launchDate.getTime(),
     } as const
+  }
+
+  get logFilePath() {
+    return `${this._runtimeConfig.logDirectory}/${this.uid}.log` as const
+  }
+
+  get processLogBaseObject(): Omit<ProcessLog, "type" | "text"> {
+    return {
+      directoryPath: this.directoryPath,
+      fileName: this.fileName,
+      uid: this.uid,
+    }
   }
 
   setUpExecutionStreams(): void {
@@ -54,22 +85,20 @@ class ProcessDefinition {
       process.stderr?.setEncoding("utf-8")
       this.process.stdout?.on("data", (string: string) => {
         this._ioManager.emit("streamData", {
-          directoryPath: this.directoryPath,
-          fileName: this.fileName,
-          uid: this.uid,
+          ...this.processLogBaseObject,
           type: "out",
           text: string,
         })
       })
       this.process.stderr?.on("data", (string: string) => {
         this._ioManager.emit("streamData", {
-          directoryPath: this.directoryPath,
-          fileName: this.fileName,
-          uid: this.uid,
+          ...this.processLogBaseObject,
           type: "err",
           text: string,
         })
       })
+      this.process.stderr?.pipe(this._logWriteStream)
+      this.process.stdout?.pipe(this._logWriteStream)
     } else
       console.warn(
         `[ProcessDefinition] - Process ${this.uid} ${this.fileName} already has streams setup`
@@ -83,12 +112,12 @@ export type ProcessInfos = ReturnType<
 
 export class ProcessPool {
   pool: ProcessDefinition[]
-  private _configuration: RuntimeConfiguration
+  private _runtimeConfig: RuntimeConfiguration
   private _ioManager: SocketIoManager
 
-  constructor(configuration: RuntimeConfiguration, ioManager: SocketIoManager) {
+  constructor(runtimeConfig: RuntimeConfiguration, ioManager: SocketIoManager) {
     this.pool = []
-    this._configuration = configuration
+    this._runtimeConfig = runtimeConfig
     this._ioManager = ioManager
   }
 
@@ -102,26 +131,42 @@ export class ProcessPool {
       const fullPath = path.join(cleanedDirectoryPath, cleanedFileName)
 
       if (
-        this._configuration.targetDirectories.includes(cleanedDirectoryPath)
+        this._runtimeConfig.targetDirectories.includes(cleanedDirectoryPath)
       ) {
         if (fs.existsSync(fullPath)) {
           const extention: "" | string = path.extname(cleanedFileName)
           const launchCmd: string | undefined | null =
-            this._configuration.extentionMapping[extention]
+            this._runtimeConfig.extentionMapping[extention]
 
           if (extention === "" || typeof launchCmd === "string") {
             const execString = `${launchCmd ? `${launchCmd} ` : ""} ${fullPath}`
-            const process = exec(execString)
-            const definition = new ProcessDefinition(
-              fileName,
-              directoryPath,
-              process,
-              this._ioManager
-            )
+            const newProcessUid = uidgen.generateSync()
 
-            this.pool.push(definition)
-            definition.setUpExecutionStreams()
-            resolve({ value: definition.getInfos(), err: null })
+            this.buildNewWriteStreamForProcessDefinition(newProcessUid)
+              .then((writeSream) => {
+                const definition = new ProcessDefinition(
+                  newProcessUid,
+                  execString,
+                  fileName,
+                  directoryPath,
+                  this._ioManager,
+                  writeSream,
+                  this._runtimeConfig
+                )
+
+                this.pool.push(definition)
+                definition.setUpExecutionStreams()
+                resolve({ value: definition.getInfos(), err: null })
+              })
+              .catch(() => {
+                resolve({
+                  value: null,
+                  err: {
+                    message: "Runtime error could not setup log streams",
+                    statusCode: 500,
+                  },
+                })
+              })
           } else {
             resolve({
               value: null,
@@ -141,6 +186,22 @@ export class ProcessPool {
           value: null,
           err: { message: "Directory not part of config", statusCode: 404 },
         })
+    })
+  }
+
+  buildNewWriteStreamForProcessDefinition(
+    uid: ProcessAttachedUid
+  ): Promise<WriteStream> {
+    return new Promise((resolve, reject) => {
+      const fullPath = `${this._runtimeConfig.logDirectory}/${uid}.log`
+      fs.writeFile(
+        `${this._runtimeConfig.logDirectory}/${uid}.log`,
+        "",
+        function (err) {
+          if (err) throw reject(err)
+          else resolve(fs.createWriteStream(fullPath, { flags: "w" }))
+        }
+      )
     })
   }
 

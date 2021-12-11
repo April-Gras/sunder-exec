@@ -1,3 +1,5 @@
+import { readFile } from "fs"
+import consola from "consola"
 import { PostHandler, PostValidator } from "../../routes/index"
 
 export default {
@@ -9,8 +11,25 @@ export default {
     return new Promise((resolve) => {
       const process = this.processPool.findProcessByUid(uid)
 
-      if (process) resolve({ err: null, value: process.getInfos() })
-      else
+      if (process) {
+        readFile(process.logFilePath, { encoding: "utf-8" }, (err, text) => {
+          if (err)
+            consola.warn(
+              `[API processByUid] - could not retrieve logs for ${process.logFilePath}`
+            )
+          resolve({
+            err: null,
+            value: {
+              process: process.getInfos(),
+              logs: {
+                ...process.processLogBaseObject,
+                text,
+                type: "out", // We loose some truth to the log type here :<
+              },
+            },
+          })
+        })
+      } else
         resolve({
           err: {
             statusCode: 404,

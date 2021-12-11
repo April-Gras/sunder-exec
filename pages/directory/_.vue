@@ -5,31 +5,12 @@
       target: {{ directoryPath }}
     </div>
     <div
-      class="
-        tw-grid
-        tw-cols-1
-        tw-gap-2
-        tw-pl-4
-        tw-ml-2
-        tw-border-0
-        tw-border-l
-        tw-border-solid
-        tw-border-gray-300
-      "
+      class="tw-grid tw-cols-1 tw-gap-2 tw-pl-4 tw-ml-2 tw-border-0 tw-border-l tw-border-solid tw-border-gray-300"
     >
       <div
         v-for="file in fileNameArray"
         :key="file"
-        class="
-          sm:tw-flex
-          tw-justify-between
-          tw-items-center
-          tw-transition-colors
-          tw-duration-150
-          tw-ease-in-out
-          hover:tw-bg-gray-700
-          tw-p-2 tw-rounded
-        "
+        class="sm:tw-flex tw-justify-between tw-items-center tw-transition-colors tw-duration-150 tw-ease-in-out hover:tw-bg-gray-700 tw-p-2 tw-rounded"
       >
         <div class="tw-mb-2 sm:tw-mb-0">
           {{ file }}

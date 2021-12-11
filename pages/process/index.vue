@@ -15,7 +15,7 @@ import { mapState } from "vuex"
 // @ts-ignore module has no types :<
 import { RecycleScroller } from "vue-virtual-scroller"
 import TypoTitle from "~/components/typographic/title.vue"
-import ProcessElement from "~/components/process/element.vue"
+import ProcessElement from "~/components/process/elementDisplay.vue"
 
 import "vue-virtual-scroller/dist/vue-virtual-scroller.css"
 
