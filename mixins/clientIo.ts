@@ -1,5 +1,7 @@
 import Vue from "vue"
 
+import consola from "consola"
+
 import { io } from "socket.io-client"
 
 import {
@@ -16,31 +18,32 @@ export default Vue.extend({
     }
   },
   mounted() {
-    this.socket = this.$clientIoManager.socket("/")
-    this.socket.on("connect", () => {
-      console.log(this.socket?.connected)
-    })
-    this.socket.on("disconnect", () => {
-      console.log(this.socket?.connected)
-    })
-    this.postSocketInit(this.socket)
-  },
-  beforeDestroy() {
-    this.socket?.disconnect()
+    if (!this.socket) {
+      this.socket = this.$clientIoManager
+      this.socket.on("connect", () => {
+        if (this.socket?.connected) consola.success("[SOCKET] - Connected")
+        else consola.error("[SOCKET] - Failed to connect")
+      })
+      this.socket.on("disconnect", () => {
+        consola.info("[SOCKET] - Disconnected")
+      })
+      this.postSocketInit(this.socket)
+    }
   },
   methods: {
-    postSocketInit(socket: ReturnType<typeof io>) {
-      console.log("No handler for post io init :(", socket)
+    postSocketInit(_socket: ReturnType<typeof io>) {
+      consola.warn("[SOCKET] - No handler for post io init")
     },
     socketListen<T extends AvailableSocketEventsToClient>(
       eventName: T,
       handler: (payload: SocketToClientEventPayloads[T]) => any
     ) {
       if (this.socket !== null) {
+        consola.info(`[SOCKET] - Setup listener on ${eventName}`)
         // @ts-ignore trust lmfao
         this.socket.on(eventName, handler)
       } else {
-        console.warn(
+        consola.warn(
           `Socket not initialized but a listener on ${eventName} was attempted to be opened`
         )
       }

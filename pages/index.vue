@@ -4,7 +4,7 @@
     <div
       class="tw-grid tw-grid-cols-1 tw-gap-4 md:tw-grid-cols-2 lg:tw-grid-gap-6"
     >
-      <FileReading
+      <File
         v-for="config in fileConfigs"
         :key="config.directoryPath"
         :config="config"
@@ -15,31 +15,30 @@
 
 <script lang="ts">
 import Vue from "vue"
+import consola from "consola"
 
 import { GetPayloadReturnDescriptor } from "module-routes"
 import TypoTitle from "~/components/typographic/title.vue"
-import FileReading from "~/components/fileReading/index.vue"
+import File from "~/components/file/index.vue"
 
-// TODO establish _AsyncData interface
 type _AsyncData = {
   fileConfigs: GetPayloadReturnDescriptor
 }
 
 export default Vue.extend({
   components: {
-    FileReading,
+    File,
     TypoTitle,
   },
   async asyncData({ $getApi }) {
     try {
       const fileConfigs = await $getApi("/readDirectoryFromConfig")
 
-      console.log({ fileConfigs })
       return {
         fileConfigs,
       }
     } catch (err) {
-      console.log(err)
+      consola.error(err)
       return { fileConfigs: [] }
     }
   },

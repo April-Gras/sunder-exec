@@ -29,7 +29,6 @@ function filterOutUnvalidExtentionFiles(
 ): string[] {
   const validExtentionList = Object.keys(extentionMapping)
 
-  console.log({ validExtentionList })
   return fileNameArray.filter((fileName) => {
     const extention = path.extname(fileName)
 

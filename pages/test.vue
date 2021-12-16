@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ButtonMain @click.native="ping" />
+    <VSelect v-model="value" :available-options="availableOptions" />
   </div>
 </template>
 
@@ -8,34 +8,28 @@
 import VueMixins from "vue-typed-mixins"
 
 import ButtonMain from "~/components/ui/buttons/main.vue"
+import VSelect from "~/components/ui/VSelect.vue"
 
 import clientIoMixin from "~/mixins/clientIo"
 
 export default VueMixins(clientIoMixin).extend({
   components: {
     ButtonMain,
+    VSelect,
   },
-  methods: {
-    postSocketInit(): void {
-      if (this.socket) {
-        this.socket.on("pong", (payload) => {
-          console.log(payload)
-        })
-        this.socketListen("confirmScriptLaunch", (payload) => {
-          console.log("confirmScriptLaunch", { payload })
-        })
-      }
-    },
-    ping(): void {
-      this.socket?.emit("ping")
-      this.$axios({
-        method: "get",
-        baseURL: location.protocol + "//" + location.hostname + ":" + "3001",
-        url: "/rest-ping",
-      }).then(() => {
-        console.log("pog")
-      })
-    },
+  data() {
+    return {
+      availableOptions: [
+        "string",
+        "string2",
+        "string3",
+        "string4",
+        "string5",
+        "string6",
+        "string7",
+      ],
+      value: "",
+    }
   },
 })
 </script>

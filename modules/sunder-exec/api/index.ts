@@ -114,9 +114,8 @@ function handleGetRequest({
 }: HandleRequestContext): void {
   const { url } = req
 
-  console.log({ url })
   if (isPartOfUrlSet(getRouteNames, url)) {
-    const { handler } = getRoutes.find((e) => e.routeUrl) ?? {}
+    const { handler } = getRoutes.find((e) => e.routeUrl === url) ?? {}
 
     if (handler) {
       handler
@@ -129,6 +128,7 @@ function handleGetRequest({
           runtimeConfig,
           processPool,
         })()
+        // @ts-ignore
         .then(({ err, value }) => {
           if (value) res.end(JSON.stringify(value))
           else if (err) resError(res, err.message, err.statusCode)

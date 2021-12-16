@@ -55,7 +55,7 @@ const axiosApiPlugin: Plugin = function (context, inject) {
   })
   $axios.onRequestError((err) => {
     consola.info(`${err.code} on ${err.config.url}`)
-    console.error(err)
+    consola.error(err)
   })
 
   const builtApiPost = apiPost.bind({ $axios })
@@ -63,13 +63,11 @@ const axiosApiPlugin: Plugin = function (context, inject) {
 
   // @ts-ignore for the love of all that is holly, I can't figure this one out :(
   context.$postApi = builtApiPost
-  inject("$postApi", builtApiPost)
+  inject("postApi", builtApiPost)
 
+  // @ts-ignore same issue as for the post api
   context.$getApi = builtApiGet
-  inject("$getApi", builtApiGet)
-
-  Vue.prototype.$getApi = builtApiGet
-  Vue.prototype.$postApi = builtApiPost
+  inject("getApi", builtApiGet)
 }
 
 declare module "vue/types/vue" {
@@ -85,6 +83,13 @@ declare module "@nuxt/types" {
     $getApi: ApiGet
   }
   interface Context {
+    $postApi: ApiPost
+    $getApi: ApiGet
+  }
+}
+
+declare module "vuex/types/index" {
+  interface Store<S> {
     $postApi: ApiPost
     $getApi: ApiGet
   }

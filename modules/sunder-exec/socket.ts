@@ -1,17 +1,19 @@
 import { Server as SocketIoServer } from "socket.io"
+import { ProcessInfos } from "./processPool"
 
 export type SocketToClientEventPayloads = {
-  confirmScriptLaunch: {
-    directoryPath: string
-    fileName: string
-    uid: string
-  }
+  confirmScriptLaunch: ProcessInfos
   streamData: {
     directoryPath: string
     fileName: string
     uid: string
     type: "err" | "out"
     text: string
+  }
+  confirmScriptExit: {
+    code: number | -1
+    signal: NodeJS.Signals | "N/A"
+    process: ProcessInfos
   }
 }
 export type AvailableSocketEventsToClient = keyof SocketToClientEventPayloads
@@ -26,21 +28,12 @@ class SocketManager {
         methods: ["GET", "POST"],
       },
     })
-
-    this.io.on("connect", (socket) => {
-      // Setup debug events
-      socket.on("ping", () => {
-        this.io.emit("pong", "from io")
-        socket.emit("pong", "from socket")
-      })
-    })
   }
 
   emit<T extends AvailableSocketEventsToClient>(
     eventName: T,
     payload: SocketToClientEventPayloads[T]
   ): void {
-    console.log(`[SOCKET IO] - Emitting ${eventName} to client`)
     this.io.emit(eventName, payload)
   }
 }

@@ -1,4 +1,6 @@
+import fs from "fs"
 import http from "http"
+import consola from "consola"
 import { Module } from "@nuxt/types"
 import { getRuntimeExtention } from "./configReader"
 import { ProcessPool } from "./processPool"
@@ -12,6 +14,16 @@ const sunderExecModule: Module = async function () {
   const runtimeConfiguration = await getRuntimeExtention()
 
   this.nuxt.hook("listen", () => {
+    consola.info("[MODULE] - Checking for log folder")
+    if (!fs.existsSync(runtimeConfiguration.logDirectory)) {
+      consola.info("[MODULE] - Creating log folder")
+      fs.mkdirSync(runtimeConfiguration.logDirectory, 0o744)
+    }
+    if (!fs.statSync(runtimeConfiguration.logDirectory).isDirectory())
+      consola.error(
+        "[MODULE] - log directory targetpath already exists and it's not a directory"
+      )
+    else consola.success("[MODULE] - Log directory found")
     const ioManager = initializeSocketProcess()
     const processes = new ProcessPool(runtimeConfiguration, ioManager)
     const server = http.createServer((req, res) => {

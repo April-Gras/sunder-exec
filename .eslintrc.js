@@ -22,6 +22,7 @@ module.exports = {
     "@typescript-eslint/no-explicit-any": 0,
     "@typescript-eslint/explicit-module-boundary-types": 0,
     "vue/no-v-html": 0,
+    "import/named": 0,
     "vue/script-setup-uses-vars": 0,
   },
 }

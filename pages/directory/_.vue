@@ -5,31 +5,12 @@
       target: {{ directoryPath }}
     </div>
     <div
-      class="
-        tw-grid
-        tw-cols-1
-        tw-gap-2
-        tw-pl-4
-        tw-ml-2
-        tw-border-0
-        tw-border-l
-        tw-border-solid
-        tw-border-gray-300
-      "
+      class="tw-grid tw-cols-1 tw-gap-2 tw-pl-4 tw-ml-2 tw-border-0 tw-border-l tw-border-solid tw-border-gray-300"
     >
       <div
         v-for="file in fileNameArray"
         :key="file"
-        class="
-          sm:tw-flex
-          tw-justify-between
-          tw-items-center
-          tw-transition-colors
-          tw-duration-150
-          tw-ease-in-out
-          hover:tw-bg-gray-700
-          tw-p-2 tw-rounded
-        "
+        class="sm:tw-flex tw-justify-between tw-items-center tw-transition-colors tw-duration-150 tw-ease-in-out hover:tw-bg-gray-700 tw-p-2 tw-rounded"
       >
         <div class="tw-mb-2 sm:tw-mb-0">
           {{ file }}
@@ -42,16 +23,15 @@
 
 <script lang="ts">
 import VueMixins from "vue-typed-mixins"
+import { mapMutations } from "vuex"
 
 import { PostReturnPayloadDescriptor } from "module-routes"
 import TypoTitle from "~/components/typographic/title.vue"
 import ButtonMain from "~/components/ui/buttons/main.vue"
 
-import clientIoMixin from "~/mixins/clientIo"
-
 type _AsyncData = PostReturnPayloadDescriptor["/readTargetDirectory"]
 
-export default VueMixins(clientIoMixin).extend({
+export default VueMixins().extend({
   components: {
     TypoTitle,
     ButtonMain,
@@ -65,8 +45,7 @@ export default VueMixins(clientIoMixin).extend({
       return await $postApi("/readTargetDirectory", {
         targetDirectory,
       })
-    } catch (err) {
-      console.log(err)
+    } catch (_err) {
       error({
         message: "Bruh please stop lmfao",
         statusCode: 404,
@@ -79,15 +58,15 @@ export default VueMixins(clientIoMixin).extend({
     return out as typeof out & _AsyncData
   },
   methods: {
+    ...mapMutations({
+      ADD_PROCESS_DEFINITION: "ADD_PROCESS_DEFINITION",
+    }),
     launchProgram(fileName: string): void {
       this.$postApi("/execTargetContext", {
         directoryPath: this.directoryPath,
         fileName,
-      })
-    },
-    postSocketInit() {
-      this.socketListen("confirmScriptLaunch", (payload) => {
-        console.log(payload.directoryPath, payload.fileName)
+      }).then((processDefinition) => {
+        this.ADD_PROCESS_DEFINITION(processDefinition)
       })
     },
   },

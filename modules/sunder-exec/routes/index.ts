@@ -1,5 +1,5 @@
 import { RuntimeConfiguration } from "../configReader"
-import { ProcessPool } from "../processPool"
+import { ProcessPool, ProcessInfos, ProcessLog } from "../processPool"
 import { SocketIoManager } from "../socket"
 import { ReqResBundle } from "../api/index"
 
@@ -29,6 +29,7 @@ export type GetPayloadReturnDescriptor = {
     fileNameArray: string[]
     directoryPath: string
   }[]
+  "/currentProcesses": ProcessInfos[]
 }
 export type AvailableGetRoutes = keyof GetPayloadReturnDescriptor
 export type GetHandler<T extends AvailableGetRoutes> = (
@@ -43,17 +44,33 @@ export type PostPayloadDescriptor = {
   "/readTargetDirectory": {
     targetDirectory: string
   }
+  "/processByUid": {
+    uid: ProcessInfos["uid"]
+  }
+  "/sendSignalToProcessWithUid": {
+    uid: ProcessInfos["uid"]
+    signal: NodeJS.Signals
+  }
+  "/terminateProcessByUid": {
+    uid: ProcessInfos["uid"]
+  }
 }
 export type AvailablePostRoutes = keyof PostPayloadDescriptor
 export type PostReturnPayloadDescriptor = {
-  "/execTargetContext": {
-    uid: string
-    directoryPath: string
-    fileName: string
-  }
+  "/execTargetContext": ProcessInfos
   "/readTargetDirectory": {
     fileNameArray: string[]
     directoryPath: string
+  }
+  "/processByUid": {
+    process: ProcessInfos
+    logs: ProcessLog
+  }
+  "/sendSignalToProcessWithUid": {
+    succeeded: boolean
+  }
+  "/terminateProcessByUid": {
+    succeeded: boolean
   }
 }
 export type PostValidator<T extends AvailablePostRoutes> = (
