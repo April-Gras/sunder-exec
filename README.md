@@ -5,6 +5,9 @@
 - Reads from a config file what directory it is allowed to read
 - Presents available scripts from said dirctories in a responsive web app
 - Can launch said scripts remotly on your local network
+- Lists all child process
+- Single process inspection page, with stdout and strderr streams
+- Can send `NodeJS.signals` to the process
 
 ## Configuration
 ```cp sunder-exec-config.template.json sunder-exec-config.json```
