@@ -55,7 +55,7 @@ const axiosApiPlugin: Plugin = function (context, inject) {
   })
   $axios.onRequestError((err) => {
     consola.info(`${err.code} on ${err.config.url}`)
-    console.error(err)
+    consola.error(err)
   })
 
   const builtApiPost = apiPost.bind({ $axios })

@@ -1,3 +1,4 @@
+import consola from "consola"
 import { getContentFromDirectoryPath } from "../fileReadingUtils"
 import { GetHandler, GetPayloadReturnDescriptor } from "../../routes/index"
 
@@ -22,7 +23,7 @@ export default {
             if (response.status === "fulfilled") {
               accumulator.push(response.value)
             } else {
-              console.warn(
+              consola.warn(
                 `[WARN] - Failed to read a directory from the config:\n${response.reason}`
               )
             }

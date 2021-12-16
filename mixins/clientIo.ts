@@ -43,7 +43,7 @@ export default Vue.extend({
         // @ts-ignore trust lmfao
         this.socket.on(eventName, handler)
       } else {
-        console.warn(
+        consola.warn(
           `Socket not initialized but a listener on ${eventName} was attempted to be opened`
         )
       }
