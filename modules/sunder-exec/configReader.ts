@@ -25,6 +25,9 @@ export function getRuntimeExtention(): Promise<RuntimeConfiguration> {
           if (contentIsValidConfig(config)) {
             resolve({
               ...config,
+              targetDirectories: config.targetDirectories.map((e) =>
+                path.normalize(e)
+              ),
               logDirectory: "./.sunder-exec",
             })
           } else {
