@@ -6,7 +6,7 @@
 	"extentionMapping": {
 		".js": "node",
 		".sh": "bash",
-		"ps1": "powershell"
+		".ps1": "powershell"
 	},
 	"noExtentionExec": null
 }
