@@ -1,6 +1,7 @@
 import path from "path"
 import fs, { WriteStream } from "fs"
 import { ChildProcess, exec } from "child_process"
+import consola from "consola"
 import UidGen from "uid-generator"
 import { RuntimeConfiguration } from "./configReader"
 import { SocketIoManager } from "./socket"
@@ -23,9 +24,11 @@ class ProcessDefinition {
   readonly process: ChildProcess
   private _ioManager: SocketIoManager
   private _streamsAreSetup: boolean
+  private _processWatcherIsSetup: boolean
   private _launchDate: Date
   private _logWriteStream: WriteStream
   private _runtimeConfig: RuntimeConfiguration
+  private _exited: boolean
   readonly fileName: string
   readonly directoryPath: string
 
@@ -39,30 +42,39 @@ class ProcessDefinition {
     runtimeConfig: RuntimeConfiguration
   ) {
     this.uid = uid
+    this._exited = false
     this._runtimeConfig = runtimeConfig
     this._ioManager = ioManager
     this._streamsAreSetup = false
+    this._processWatcherIsSetup = false
     this.directoryPath = directoryPath
     this.fileName = fileName
     this._launchDate = new Date()
     this._logWriteStream = writeStream
     this.process = exec(execString)
     this.setUpExecutionStreams()
-    this._ioManager.emit("confirmScriptLaunch", this.getInfos())
+    this.setUpProcessStatusWatcher()
+    this._ioManager.emit("confirmScriptLaunch", this.getInfos)
   }
 
-  getInfos() {
-    const { pid, killed, exitCode, connected } = this.process
-    const { uid, fileName, directoryPath, _launchDate } = this
+  get isAlive() {
+    return !this._exited
+  }
+
+  get getInfos() {
+    const { pid, killed, exitCode, connected, signalCode } = this.process
+    const { uid, fileName, directoryPath, _launchDate, _exited } = this
 
     return {
       pid,
       killed,
       exitCode,
+      signalCode,
       connected,
       uid,
       fileName,
       directoryPath,
+      exited: _exited,
       timestamp: _launchDate.getTime(),
     } as const
   }
@@ -77,6 +89,28 @@ class ProcessDefinition {
       fileName: this.fileName,
       uid: this.uid,
     }
+  }
+
+  private _pauseStd(): void {
+    this.process.stdout?.pause()
+    this.process.stderr?.pause()
+  }
+
+  setUpProcessStatusWatcher(): void {
+    if (!this._processWatcherIsSetup) {
+      this.process.on("exit", (code, signal) => {
+        this._exited = true
+        this._ioManager.emit("confirmScriptExit", {
+          signal: signal ?? "N/A",
+          code: code ?? -1,
+          process: this.getInfos,
+        })
+      })
+      this._processWatcherIsSetup = true
+    } else
+      consola.warn(
+        `[ProcessDefinition] - Process ${this.uid} ${this.fileName} already has a status watcher`
+      )
   }
 
   setUpExecutionStreams(): void {
@@ -99,16 +133,15 @@ class ProcessDefinition {
       })
       this.process.stderr?.pipe(this._logWriteStream)
       this.process.stdout?.pipe(this._logWriteStream)
+      this._streamsAreSetup = true
     } else
-      console.warn(
+      consola.warn(
         `[ProcessDefinition] - Process ${this.uid} ${this.fileName} already has streams setup`
       )
   }
 }
 
-export type ProcessInfos = ReturnType<
-  InstanceType<typeof ProcessDefinition>["getInfos"]
->
+export type ProcessInfos = InstanceType<typeof ProcessDefinition>["getInfos"]
 
 export class ProcessPool {
   pool: ProcessDefinition[]
@@ -155,8 +188,7 @@ export class ProcessPool {
                 )
 
                 this.pool.push(definition)
-                definition.setUpExecutionStreams()
-                resolve({ value: definition.getInfos(), err: null })
+                resolve({ value: definition.getInfos, err: null })
               })
               .catch(() => {
                 resolve({

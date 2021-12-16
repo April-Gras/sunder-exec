@@ -16,6 +16,13 @@ export const mutations: MutationTree<RootState> = {
       state.processes.push(process)
     // TODO Should we handle duplicate addition ?
   },
+  UPDATE_PROCESS_DEFINITION(state, process: ClientSideProcessDefinition) {
+    const targetIndex = state.processes.findIndex(
+      ({ uid }) => process.uid === uid
+    )
+
+    if (targetIndex !== -1) state.processes.splice(targetIndex, 1, process)
+  },
 }
 
 export const actions: ActionTree<RootState, RootState> = {

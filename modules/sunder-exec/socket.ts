@@ -10,6 +10,11 @@ export type SocketToClientEventPayloads = {
     type: "err" | "out"
     text: string
   }
+  confirmScriptExit: {
+    code: number | -1
+    signal: NodeJS.Signals | "N/A"
+    process: ProcessInfos
+  }
 }
 export type AvailableSocketEventsToClient = keyof SocketToClientEventPayloads
 

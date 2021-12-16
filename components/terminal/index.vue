@@ -1,12 +1,16 @@
 <template>
-  <div class="tw-rounded-lg tw-mt-12 tw-whitespace-pre-wrap">
-    <span class="old">{{ inspectedProcess.logs.text }}</span>
-    <span
-      v-for="(logs, index) in additionalLogs"
-      :key="index"
-      :class="logs.type"
-      >{{ logs.text }}</span
-    >
+  <div class="tw-bg-darkest tw-relative heightControl tw-overflow-x-auto">
+    <div class="tw-sticky tw-top-0"><slot name="header" /></div>
+    <div class="tw-whitespace-pre-wrap tw-p-4 md:tw-p-6 lg:tw-p-10">
+      <span class="old">{{ inspectedProcess.logs.text }}</span
+      ><span
+        v-for="(logs, index) in additionalLogs"
+        :key="index"
+        :class="logs.type"
+        >{{ logs.text }}</span
+      >
+    </div>
+    <div class="tw-sticky tw-bottom-0"><slot name="footer" /></div>
   </div>
 </template>
 
@@ -34,13 +38,33 @@ export default VueMixins(clientIoMixin).extend({
   methods: {
     postSocketInit() {
       this.socketListen("streamData", (payload) => {
-        if (this.inspectedProcess.process.uid === payload.uid)
+        if (this.inspectedProcess.process.uid === payload.uid) {
           this.additionalLogs.push(payload)
+        }
       })
     },
   },
-  watch: {},
 })
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.old {
+  @apply tw-text-gray-400;
+}
+
+.out {
+  @apply tw-text-white;
+}
+
+.error {
+  @apply tw-text-error;
+}
+
+.heightControl {
+  max-height: calc(100vh - 112px - (theme("spacing.4") * 2));
+
+  @screen sm {
+    max-height: calc(100vh - 112px - (theme("spacing.6") * 2));
+  }
+}
+</style>

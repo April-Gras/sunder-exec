@@ -10,7 +10,7 @@
     <div>
       <ElementTimeTracker :timestamp="process.timestamp" />
     </div>
-    <ElementStatus :killed="process.killed" :exit-code="process.exitCode" />
+    <ElementStatus :process="process" />
   </NuxtLink>
 </template>
 

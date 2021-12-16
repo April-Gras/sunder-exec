@@ -3,6 +3,7 @@ export default {
     host: "0.0.0.0",
     port: 3000,
   },
+  css: ["~/static/transitions.css"],
   head: {
     title: "sunder-exec",
     htmlAttrs: {

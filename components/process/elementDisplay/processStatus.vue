@@ -1,7 +1,10 @@
 <template>
   <transition>
-    <div v-if="killed" class="processElementStatus killed">
-      Killed / {{ process.exitCode }}
+    <div v-if="process.killed" class="processElementStatus killed">
+      Killed / {{ statusContext }}
+    </div>
+    <div v-else-if="process.exited" class="processElementStatus exited">
+      Exit / {{ statusContext }}
     </div>
     <div v-else class="processElementStatus alive">Running</div>
   </transition>
@@ -14,15 +17,15 @@ import { ClientSideProcessDefinition } from "~/types/clientSideProcessDefinition
 
 export default Vue.extend({
   props: {
-    killed: {
-      type: Boolean,
+    process: {
+      type: Object,
       required: true,
-    } as PropOptions<ClientSideProcessDefinition["killed"]>,
-    exitCode: {
-      type: Number,
-      required: false,
-      default: null,
-    } as PropOptions<ClientSideProcessDefinition["exitCode"]>,
+    } as PropOptions<ClientSideProcessDefinition>,
+  },
+  computed: {
+    statusContext(): number | NodeJS.Signals | null {
+      return this.process.signalCode ?? this.process.exitCode
+    },
   },
 })
 </script>
@@ -33,6 +36,10 @@ export default Vue.extend({
   width: fit-content;
 
   &.killed {
+    @apply tw-bg-error;
+  }
+
+  &.exited {
     @apply tw-bg-red-100;
   }
 

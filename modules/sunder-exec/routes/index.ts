@@ -47,6 +47,13 @@ export type PostPayloadDescriptor = {
   "/processByUid": {
     uid: ProcessInfos["uid"]
   }
+  "/sendSignalToProcessWithUid": {
+    uid: ProcessInfos["uid"]
+    signal: NodeJS.Signals
+  }
+  "/terminateProcessByUid": {
+    uid: ProcessInfos["uid"]
+  }
 }
 export type AvailablePostRoutes = keyof PostPayloadDescriptor
 export type PostReturnPayloadDescriptor = {
@@ -58,6 +65,12 @@ export type PostReturnPayloadDescriptor = {
   "/processByUid": {
     process: ProcessInfos
     logs: ProcessLog
+  }
+  "/sendSignalToProcessWithUid": {
+    succeeded: boolean
+  }
+  "/terminateProcessByUid": {
+    succeeded: boolean
   }
 }
 export type PostValidator<T extends AvailablePostRoutes> = (

@@ -20,7 +20,7 @@ export default {
           resolve({
             err: null,
             value: {
-              process: process.getInfos(),
+              process: process.getInfos,
               logs: {
                 ...process.processLogBaseObject,
                 text,

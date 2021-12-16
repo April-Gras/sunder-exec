@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TypoTitle>Job listing</TypoTitle>
+    <TypoTitle>Process listing</TypoTitle>
     <div class="tw-grid tw-grid-gap-4 tw-grid-cols-1 tw-gap-4">
       <ProcessElement v-for="process in PROCESSES" :key="process.pid" :process="process" />
     </div>
