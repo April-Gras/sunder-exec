@@ -1,5 +1,5 @@
 <template>
-  <div class="tw-p-4 tw-bg-gray-600">
+  <div class="tw-p-4 tw-bg-gray-600 tw-overflow-y-auto">
     <div class="sendSignal" :class="{ canSendSignal }">
       <VSelect
         v-model="value"
