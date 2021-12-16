@@ -1,5 +1,5 @@
 <template>
-  <div class="tw-flex tw-justify-start tw-items-start tw-gap-2">
+  <div class="tw-flex tw-justify-start tw-items-start tw-space-x-2">
     <div>Process list</div>
     <transition name="scale" mode="out-in">
       <div :key="PROCESS_COUNT">{{ PROCESS_COUNT }}</div>

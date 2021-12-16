@@ -1,6 +1,9 @@
 <template>
-  <div class="tw-p-4 tw-bg-gray-600 tw-overflow-y-auto">
-    <div class="sendSignal" :class="{ canSendSignal }">
+  <div class="tw-p-4 tw-bg-gray-600">
+    <div
+      class="sendSignal tw-space-y-4 600:tw-space-y-0 600:tw-space-x-4"
+      :class="{ canSendSignal }"
+    >
       <VSelect
         v-model="value"
         reverse-dropdown-position
@@ -79,11 +82,15 @@ export default Vue.extend({
 
 <style lang="scss" scoped>
 .sendSignal {
-  @apply tw-flex tw-gap-4 tw-justify-between tw-items-center;
+  @apply tw-flex tw-justify-between tw-items-center tw-flex-wrap;
   @apply tw-transition-opacity tw-duration-150 tw-ease-in-out;
 
   &:not(.canSendSignal) {
     @apply tw-opacity-25 tw-pointer-events-none;
+  }
+
+  @screen 600 {
+    @apply tw-flex-nowrap;
   }
 }
 </style>
