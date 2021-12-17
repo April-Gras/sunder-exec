@@ -1,21 +1,24 @@
 <template>
   <div>
-    <VSelect v-model="value" :available-options="availableOptions" />
+    <VCheckbox
+      v-for="option in availableOptions"
+      :key="option"
+      v-model="value"
+      :target="option"
+    />
   </div>
 </template>
 
 <script lang="ts">
 import VueMixins from "vue-typed-mixins"
 
-import ButtonMain from "~/components/ui/buttons/main.vue"
-import VSelect from "~/components/ui/VSelect.vue"
+import VCheckbox from "~/components/ui/VCheckbox.vue"
 
 import clientIoMixin from "~/mixins/clientIo"
 
 export default VueMixins(clientIoMixin).extend({
   components: {
-    ButtonMain,
-    VSelect,
+    VCheckbox,
   },
   data() {
     return {
@@ -28,7 +31,7 @@ export default VueMixins(clientIoMixin).extend({
         "string6",
         "string7",
       ],
-      value: "",
+      value: [],
     }
   },
 })

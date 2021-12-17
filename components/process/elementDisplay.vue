@@ -1,5 +1,9 @@
 <template>
-  <NuxtLink class="processElementWrapper" :to="`/process/${process.uid}`">
+  <NuxtLink
+    class="processElementWrapper"
+    :class="{ selected, hasCheckbox }"
+    :to="`/process/${process.uid}`"
+  >
     <div class="tw-text-sm">
       <span
         class="tw-overflow-ellipsis tw-whitespace-nowrap tw-overflow-hidden tw-hidden sm:tw-block"
@@ -28,6 +32,16 @@ export default Vue.extend({
     ElementTimeTracker,
   },
   props: {
+    selected: {
+      type: Boolean,
+      default: false,
+      required: false,
+    },
+    hasCheckbox: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     process: {
       type: Object,
       required: true,
